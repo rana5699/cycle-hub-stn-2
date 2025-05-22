@@ -1,0 +1,196 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import Image from "next/image"
+import { motion } from "framer-motion"
+import { ArrowRight,  } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import { Card,} from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+
+// interface Offer {
+//   id: string
+//   title: string
+//   description: string
+//   discount: string
+//   image: string
+//   expiryDate: string
+//   category: string
+//   code?: string
+// }
+
+export default function OffersSection() {
+  const [timeLeft, setTimeLeft] = useState<{
+    days: number
+    hours: number
+    minutes: number
+    seconds: number
+  }>({
+    days: 3,
+    hours: 8,
+    minutes: 45,
+    seconds: 0,
+  })
+
+  // Update countdown timer
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 }
+        } else if (prev.minutes > 0) {
+          return { ...prev, minutes: prev.minutes - 1, seconds: 59 }
+        } else if (prev.hours > 0) {
+          return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 }
+        } else if (prev.days > 0) {
+          return { ...prev, days: prev.days - 1, hours: 23, minutes: 59, seconds: 59 }
+        }
+        return prev
+      })
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [])
+
+//   const offers: Offer[] = [
+//     {
+//       id: "offer-1",
+//       title: "Summer Sale",
+//       description: "Get up to 30% off on all mountain bikes. Limited time offer!",
+//       discount: "30% OFF",
+//       image: "/placeholder.svg?height=200&width=300",
+//       expiryDate: "2023-08-31",
+//       category: "Mountain Bikes",
+//       code: "SUMMER30",
+//     },
+//     {
+//       id: "offer-2",
+//       title: "Accessory Bundle",
+//       description: "Buy any helmet and get a free water bottle and bike light.",
+//       discount: "FREE ITEMS",
+//       image: "/placeholder.svg?height=200&width=300",
+//       expiryDate: "2023-08-15",
+//       category: "Accessories",
+//     },
+//     {
+//       id: "offer-3",
+//       title: "Service Special",
+//       description: "Book a full bike tune-up and get a free basic cleaning service.",
+//       discount: "FREE SERVICE",
+//       image: "/placeholder.svg?height=200&width=300",
+//       expiryDate: "2023-09-15",
+//       category: "Services",
+//       code: "TUNEUP",
+//     },
+//   ]
+
+//   const fadeIn = {
+//     hidden: { opacity: 0, y: 20 },
+//     visible: (i: number) => ({
+//       opacity: 1,
+//       y: 0,
+//       transition: {
+//         delay: i * 0.1,
+//         duration: 0.5,
+//         ease: "easeOut",
+//       },
+//     }),
+//   }
+
+  return (
+    <section className="py-12">
+      <div className="container">
+        <div className="text-center mb-12">
+          <motion.h2
+            className="text-3xl font-bold md:text-4xl gradient-text mb-4"
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            Special Offers
+          </motion.h2>
+          <motion.p
+            className="text-lg text-muted-foreground max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            Take advantage of these limited-time deals and save on your next purchase.
+          </motion.p>
+        </div>
+
+        {/* Featured Offer */}
+        <motion.div
+          className="mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <Card className="overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-2">
+              <div className="relative h-64 md:h-auto">
+                <Image src="https://i.ibb.co/pj9QXqmt/special-offer-comic-style-template-44695-320.jpg" alt="Flash Sale" fill className="object-cover" />
+                <Badge className="absolute top-4 left-4 bg-white text-black">50% OFF</Badge>
+              </div>
+              <div className="p-6 md:p-8 flex flex-col justify-center">
+                <h3 className="text-2xl font-bold mb-2">Flash Sale: Road Bikes</h3>
+                <p className="text-muted-foreground mb-4">
+                  For a limited time only, get 50% off on select road bikes. Don&apos;t miss this incredible opportunity to
+                  upgrade your ride at an unbeatable price.
+                </p>
+                <div className="mb-6">
+                  <p className="text-sm font-medium mb-2">Offer ends in:</p>
+                  <div className="flex space-x-4">
+                    <div className="text-center">
+                      <div className="bg-muted rounded-md p-2 font-mono text-xl font-bold">
+                        {timeLeft.days.toString().padStart(2, "0")}
+                      </div>
+                      <p className="text-xs mt-1">Days</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="bg-muted rounded-md p-2 font-mono text-xl font-bold">
+                        {timeLeft.hours.toString().padStart(2, "0")}
+                      </div>
+                      <p className="text-xs mt-1">Hours</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="bg-muted rounded-md p-2 font-mono text-xl font-bold">
+                        {timeLeft.minutes.toString().padStart(2, "0")}
+                      </div>
+                      <p className="text-xs mt-1">Mins</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="bg-muted rounded-md p-2 font-mono text-xl font-bold">
+                        {timeLeft.seconds.toString().padStart(2, "0")}
+                      </div>
+                      <p className="text-xs mt-1">Secs</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium mb-1">Use code:</p>
+                    <div className="bg-muted p-2 rounded-md font-mono text-center">FLASH50</div>
+                  </div>
+                  <Link href="/products" className="flex-1">
+                    <Button className="w-full gradient-bg gradient-bg-hover mt-4 sm:mt-auto">
+                      Shop Now
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+
+     
+      </div>
+    </section>
+  )
+}

@@ -1,95 +1,66 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import { getAllProducts } from "@/actions/ptoducts";
+import CategorySection from "@/components/Module/Category/CategorySection";
+import HeroSlider from "@/components/Module/Home/HeroSlider";
+import NewsletterSection from "@/components/Module/Home/NewletterSection";
+import OffersSection from "@/components/Module/Home/OfferedSection";
+import FeaturedProducts from "@/components/Module/Products/FeaturedProducts/FeaturedProducts";
+import TestimonialSection from "@/components/Module/TestimonialSection/TestimonialSection";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
-export default function Home() {
+export default async function HomePage() {
+  const { data: products } = await getAllProducts();
+
+  // console.log(data,"from client")
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <main className="flex-1">
+      <HeroSlider products={products} />
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+      <section className="container py-12 md:py-20">
+        <div className="flex flex-col items-center justify-center space-y-4 text-center">
+          <div className="space-y-2">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+              Shop by Category
+            </h2>
+            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">
+              Explore our wide range of bicycles and accessories for every type
+              of rider
+            </p>
+          </div>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        <CategorySection />
+      </section>
+
+      <section className="container py-12 md:py-20">
+        <div className="flex flex-col items-center justify-center space-y-4 text-center">
+          <div className="space-y-2">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+              Featured Products
+            </h2>
+            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">
+              Discover our top-rated bicycles and accessories
+            </p>
+          </div>
+        </div>
+        <FeaturedProducts products={products} />
+        <div className="flex justify-center mt-10">
+          <Link href="/products">
+            <Button
+              size="lg"
+              className="text-white bg-gradient-to-r from-navy-blue to-teal-500 hover:from-teal-500 hover:to-navy-blue"
+            >
+              View All Products
+            </Button>
+          </Link>
+        </div>
+      </section>
+
+      <section className="container py-12 md:py-20">
+        <OffersSection />
+      </section>
+
+      <TestimonialSection />
+      <NewsletterSection />
+    </main>
   );
 }
