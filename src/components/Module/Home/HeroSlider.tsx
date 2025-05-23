@@ -49,7 +49,7 @@ export default function HeroSlider({ products }: { products: any[] }) {
                   "https://"
                 ) || "/placeholder.svg"
               }
-              alt={products[currentSlide]?.title}
+              alt="Hero Image"
               fill
               priority
               className="object-cover"
