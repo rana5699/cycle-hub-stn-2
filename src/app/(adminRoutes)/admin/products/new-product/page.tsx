@@ -1,4 +1,5 @@
-import NewProductForm from '@/components/Module/Dashboard/Admin/Product/NewProduct'
+
+import NewProductForm from '@/components/Module/Dashboard/Admin/Product/NewProduc/NewProduct'
 import React from 'react'
 
 const NewProductPage = () => {

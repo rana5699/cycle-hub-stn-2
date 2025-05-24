@@ -1,5 +1,6 @@
 import { getAllProducts } from "@/actions/ptoducts";
 import CategorySection from "@/components/Module/Category/CategorySection";
+import ExperienceSection from "@/components/Module/Home/ExperienceSection";
 import HeroSlider from "@/components/Module/Home/HeroSlider";
 import NewsletterSection from "@/components/Module/Home/NewletterSection";
 import OffersSection from "@/components/Module/Home/OfferedSection";
@@ -57,6 +58,10 @@ export default async function HomePage() {
 
       <section className="container py-12 md:py-20">
         <OffersSection />
+      </section>
+
+      <section className="container py-12 md:py-20">
+        <ExperienceSection />
       </section>
 
       <TestimonialSection />

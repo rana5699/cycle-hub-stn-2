@@ -54,3 +54,57 @@ export type TOrderResponse = {
   allOrders: TOrder[];
   totalCost: number;
 };
+
+
+
+// New Product
+
+
+export type TProductVariant = {
+  id: string;
+  name: string;
+  price: number;
+  sku: string;
+  inventory: number;
+  attributes: {
+    [key: string]: string;
+  };
+};
+
+export type TInventory = {
+  quantity: number;
+  lowStockThreshold: number;
+  trackInventory: boolean;
+};
+
+export type TSeo = {
+  title: string;
+  description: string;
+  keywords: string;
+};
+export type TSpecifications = {
+  [key: string]: string;
+};
+
+export type TBasicInfo = {
+  name: string;
+  description: string;
+  price: number;
+  sku: string;
+  barcode?: string;
+  category: string;
+  tags: string[];
+  featured: boolean;
+  status: "active" | "draft" | "archived";
+};
+
+export type TNewProduct = {
+  id?: string;
+  basicInfo: TBasicInfo;
+  tags: string[];
+  images: string[];
+  inventory: TInventory;
+  specifications: TSpecifications;
+  variants: TProductVariant[];
+  seo: TSeo;
+};
