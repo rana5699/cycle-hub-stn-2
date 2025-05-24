@@ -1,37 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import type React from "react";
 
-import { useState,  useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  ArrowLeft,
-  Check,
-  ImagePlus,
-  Loader2,
-  Save,
-  X,
-  Package,
-} from "lucide-react";
+import { ArrowLeft, Loader2, Plus, Save, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
+
 import { TNewProduct } from "@/types";
 import BasicInformation from "./BasicInformation";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import useImageUploader from "@/utils/useImageUploader";
+import ImageSectionTab from "./ImageSectionTab";
+import SFormInput from "@/components/Shared/Form/SFormInput";
 
 // Types
 interface ProductFormProps {
@@ -39,47 +33,14 @@ interface ProductFormProps {
   isEditing?: boolean;
 }
 
-// Sample data for dropdowns
-const categories = [
-  { value: "mountain-bikes", label: "Mountain Bikes" },
-  { value: "road-bikes", label: "Road Bikes" },
-  { value: "hybrid-bikes", label: "Hybrid Bikes" },
-  { value: "electric-bikes", label: "Electric Bikes" },
-  { value: "accessories", label: "Accessories" },
-  { value: "components", label: "Components" },
-  { value: "clothing", label: "Clothing" },
-  { value: "tools", label: "Tools" },
-];
-
-const availableTags = [
-  "new",
-  "sale",
-  "bestseller",
-  "featured",
-  "limited",
-  "premium",
-  "beginner",
-  "intermediate",
-  "advanced",
-  "professional",
-  "aluminum",
-  "carbon",
-  "steel",
-  "titanium",
-  "men",
-  "women",
-  "unisex",
-  "kids",
-];
-
 // Default empty product
 const emptyProduct: TNewProduct = {
   basicInfo: {
     name: "",
     description: "",
     price: 0,
+    quantity: 0,
     sku: "",
-    barcode: "",
     category: "",
     tags: [],
     featured: false,
@@ -87,18 +48,7 @@ const emptyProduct: TNewProduct = {
   },
   tags: [],
   images: [],
-  inventory: {
-    quantity: 0,
-    lowStockThreshold: 5,
-    trackInventory: true,
-  },
   specifications: {},
-  variants: [],
-  seo: {
-    title: "",
-    description: "",
-    keywords: "",
-  },
 };
 
 export default function ProductForm({
@@ -110,99 +60,27 @@ export default function ProductForm({
   });
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("basic");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [product, setProduct] = useState<TNewProduct>(
     initialData || emptyProduct
   );
-  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const [selectedCategory, setSelectedCategory] = useState(
     initialData?.basicInfo?.category || ""
   );
+  const [productImageUrl, setProductImageUrl] = useState<File | File[]>([]);
+  const { uploadImagesToCloudinary, isUploading } = useImageUploader();
 
-  // Update SEO title if product name changes and SEO title is empty
-  useEffect(() => {
-    if (product?.basicInfo?.name && !product.seo.title) {
-      setProduct((prev) => ({
-        ...prev,
-        seo: {
-          ...prev.seo,
-          title: product?.basicInfo?.name,
-        },
-      }));
-    }
-  }, [product?.basicInfo?.name, product.seo.title]);
+  const [newSpecKey, setNewSpecKey] = useState("");
+  const [newSpecValue, setNewSpecValue] = useState("");
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-
-    // Handle nested properties
-    if (name.includes(".")) {
-      const [parent, child] = name.split(".");
-      setProduct((prev) => ({
-        ...prev,
-        [parent]: {
-          ...((prev[parent as keyof TNewProduct] || {}) as Record<string, any>),
-          [child]: value,
-        },
-      }));
-    } else {
-      setProduct((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
-
-    // Clear error for this field if it exists
-    if (errors[name]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
-  };
-
-  const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    const numValue = value === "" ? 0 : Number.parseFloat(value);
-
-    // Handle nested properties
-    if (name.includes(".")) {
-      const [parent, child] = name.split(".");
-      setProduct((prev) => ({
-        ...prev,
-        [parent]: {
-          ...((prev[parent as keyof TNewProduct] || {}) as Record<string, any>),
-          [child]: numValue,
-        },
-      }));
-    } else {
-      setProduct((prev) => ({
-        ...prev,
-        [name]: numValue,
-      }));
-    }
-  };
-
-  const handleSwitchChange = (name: string, checked: boolean) => {
-    // Handle nested properties
-    if (name.includes(".")) {
-      const [parent, child] = name.split(".");
-      setProduct((prev) => ({
-        ...prev,
-        [parent]: {
-          ...((prev[parent as keyof TNewProduct] || {}) as Record<string, any>),
-          [child]: checked,
-        },
-      }));
-    } else {
-      setProduct((prev) => ({
-        ...prev,
-        [name]: checked,
-      }));
-    }
+  const handleSwitchChange = (checked: boolean) => {
+    setProduct((prev) => ({
+      ...prev,
+      basicInfo: {
+        ...prev.basicInfo,
+        featured: checked,
+      },
+    }));
   };
 
   const handleSelectChange = (name: string, value: string) => {
@@ -217,9 +95,59 @@ export default function ProductForm({
     }));
   };
 
-  const handleSubmit = (data: any) => {
-    console.log(data);
+  const handleAddSpecification = () => {
+    if (newSpecKey.trim() && newSpecValue.trim()) {
+      setProduct((prev) => ({
+        ...prev,
+        specifications: {
+          ...prev.specifications,
+          [newSpecKey]: newSpecValue,
+        },
+      }));
+      setNewSpecKey("");
+      setNewSpecValue("");
+    }
   };
+
+  const handleRemoveSpecification = (key: string) => {
+    setProduct((prev) => {
+      const newSpecs = { ...prev.specifications };
+      delete newSpecs[key];
+      return {
+        ...prev,
+        specifications: newSpecs,
+      };
+    });
+  };
+
+  const handleSubmit = async (data: any) => {
+    const uploadedImageUrl = await uploadImagesToCloudinary(
+      productImageUrl,
+      true
+    );
+
+    const productData = {
+      ...data,
+      basicInfo: {
+        name: data.name,
+        description: data.description,
+        brand: data.brand,
+        price: Number(data.price),
+        sku: data.sku,
+        barcode: data.barcode,
+        tags: data.tags,
+        quantity: Number(data.quantity),
+        featured: data.featured,
+        status: data.status,
+        category: selectedCategory,
+      },
+      images: uploadedImageUrl,
+      specifications: product.specifications,
+    };
+
+    console.log(productData, "productData");
+  };
+
 
   return (
     <Form {...form}>
@@ -241,7 +169,7 @@ export default function ProductForm({
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
-                disabled={isSubmitting}
+                disabled={isUploading}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Cancel
@@ -249,9 +177,9 @@ export default function ProductForm({
               <Button
                 type="submit"
                 className="gradient-bg gradient-bg-hover w-full sm:w-auto"
-                disabled={isSubmitting}
+                disabled={isUploading}
               >
-                {isSubmitting ? (
+                {isUploading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Saving...
@@ -271,7 +199,7 @@ export default function ProductForm({
             onValueChange={setActiveTab}
             className="w-full"
           >
-            <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-8">
+            <TabsList className="grid grid-cols-3  mb-8">
               <TabsTrigger
                 value="basic"
                 className="data-[state=active]:gradient-bg"
@@ -285,42 +213,139 @@ export default function ProductForm({
                 Images
               </TabsTrigger>
               <TabsTrigger
-                value="inventory"
-                className="data-[state=active]:gradient-bg"
-              >
-                Inventory
-              </TabsTrigger>
-              <TabsTrigger
                 value="specifications"
                 className="data-[state=active]:gradient-bg"
               >
                 Specifications
               </TabsTrigger>
-              <TabsTrigger
+              {/* <TabsTrigger
                 value="seo"
                 className="data-[state=active]:gradient-bg"
               >
                 SEO
-              </TabsTrigger>
+              </TabsTrigger> */}
             </TabsList>
 
-            <div className="grid gap-8 grid-cols-1 lg:grid-cols-3">
+            <div className="grid gap-5 grid-cols-1">
               <div className="lg:col-span-2">
                 <TabsContent value="basic">
                   <BasicInformation
                     productInfo={product.basicInfo}
-                    handleInputChange={handleInputChange}
-                    handleNumberInputChange={handleNumberInputChange}
                     handleSelectChange={handleSelectChange}
                     handleSwitchChange={handleSwitchChange}
                     control={form.control}
                   />
                 </TabsContent>
               </div>
+              <div className="lg:col-span-2">
+                <TabsContent value="images">
+                  <ImageSectionTab
+                    control={form.control}
+                    handleAddImage={setProductImageUrl}
+                  />
+                </TabsContent>
+              </div>
+
+              <div className="lg:col-span-2">
+                <TabsContent value="specifications">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Product Specifications</CardTitle>
+                      <CardDescription>
+                        Add technical details and specifications for your
+                        product
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <SFormInput
+                            control={form.control}
+                            name="newSpecKey"
+                            placeholder="e.g. 12kg"
+                            type="text"
+                            label="Specification Value"
+                            onChange={(e) => setNewSpecKey(e.target.value)}
+                          />
+                        </div>
+
+                        <div className="">
+                          <SFormInput
+                            control={form.control}
+                            name="newSpecValue"
+                            placeholder="e.g. 12kg"
+                            type="text"
+                            label="Specification Value"
+                            onChange={(e) => setNewSpecValue(e.target.value)}
+                          />
+
+                          <Button
+                            className="mt-3 text-white bg-gradient-to-r from-navy-blue to-teal-500 hover:from-teal-500 hover:to-navy-blue"
+                            type="button"
+                            onClick={handleAddSpecification}
+                            disabled={
+                              !newSpecKey.trim() || !newSpecValue.trim()
+                            }
+                          >
+                            <Plus className="h-10 w-10 " />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {Object.keys(product.specifications).length > 0 ? (
+                        <div className="border rounded-md overflow-hidden">
+                          <table className="w-full">
+                            <thead className="bg-muted">
+                              <tr>
+                                <th className="text-left p-2 font-medium">
+                                  Specification
+                                </th>
+                                <th className="text-left p-2 font-medium">
+                                  Value
+                                </th>
+                                <th className="p-2 w-16"></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {Object.entries(product.specifications).map(
+                                ([key, value]) => (
+                                  <tr key={key} className="border-t">
+                                    <td className="p-2 font-medium">{key}</td>
+                                    <td className="p-2">{value}</td>
+                                    <td className="p-2">
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() =>
+                                          handleRemoveSpecification(key)
+                                        }
+                                      >
+                                        <Trash2 className="h-4 w-4 text-red-500" />
+                                      </Button>
+                                    </td>
+                                  </tr>
+                                )
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : (
+                        <div className="text-center p-8 border rounded-md bg-muted/10">
+                          <p className="text-muted-foreground">
+                            No specifications added yet. Add specifications to
+                            provide detailed information about your product.
+                          </p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </div>
 
               <div className="lg:col-span-1">
                 <Card className="sticky top-6">
-                  <CardHeader>
+                  {/* <CardHeader>
                     <CardTitle>Product Summary</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -463,25 +488,25 @@ export default function ProductForm({
                       </ul>
                     </div>
                   </CardContent>
-                  <CardFooter>
-                    <Button
-                      type="submit"
-                      className="w-full gradient-bg gradient-bg-hover"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Saving...
-                        </>
-                      ) : (
-                        <>
-                          <Save className="mr-2 h-4 w-4" />
-                          Save Product
-                        </>
-                      )}
-                    </Button>
-                  </CardFooter>
+                  <CardFooter> */}
+                  <Button
+                    type="submit"
+                    className="w-full gradient-bg gradient-bg-hover"
+                    disabled={isUploading}
+                  >
+                    {isUploading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="mr-2 h-4 w-4" />
+                        Save Product
+                      </>
+                    )}
+                  </Button>
+                  {/* </CardFooter> */}
                 </Card>
               </div>
             </div>

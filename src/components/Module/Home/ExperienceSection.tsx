@@ -293,7 +293,7 @@ export default function ExperienceSection() {
                         {experience.icon}
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-xl font-bold mb-2">
+                        <h3 className="text-xl gradient-text font-bold mb-2">
                           {experience.title}
                         </h3>
                         <p className="text-muted-foreground mb-4">

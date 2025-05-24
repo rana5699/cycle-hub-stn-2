@@ -8,14 +8,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import SFormInput from "@/components/Shared/Form/SFormInput";
 import SFormTextArea from "@/components/Shared/Form/SFormTextArea";
 import { Control } from "react-hook-form";
 import { TBasicInfo } from "@/types";
 import SFormSelect from "@/components/Shared/Form/SFormSelect";
 import SFTagSelector from "@/components/Shared/Form/SFTagSelector";
-import { Switch } from "@/components/ui/switch";
+import SFormSwitch from "@/components/Shared/Form/SFormSwicth";
 
 export const categories = [
   { value: "mountain-bikes", label: "Mountain Bikes" },
@@ -52,29 +51,18 @@ export const availableTags = [
 interface ProductFormBasicInfoProps {
   control: Control<any>;
   productInfo: TBasicInfo;
-  handleInputChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void;
-  handleNumberInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSelectChange: (name: string, value: string) => void;
-  handleSwitchChange: (name: string, checked: boolean) => void;
+  handleSwitchChange: (checked: boolean) => void;
 }
 
 const BasicInformation = ({
   control,
-  productInfo,
-  handleInputChange,
-  handleNumberInputChange,
+  // productInfo,
   handleSelectChange,
   handleSwitchChange,
 }: ProductFormBasicInfoProps) => {
-
   const onSelectChange = (name: string) => (value: string) => {
     handleSelectChange(name, value);
-  };
-
-  const onSwitchChange = (name: string) => (checked: boolean) => {
-    handleSwitchChange(name, checked);
   };
 
   return (
@@ -93,10 +81,19 @@ const BasicInformation = ({
             control={control}
             name="name"
             placeholder="e.g. Mountain Bike Pro 2023"
-            
-            onChange={handleInputChange}
             type="text"
             label="Product Name"
+          />
+        </div>
+
+        {/* Product brand */}
+        <div className="space-y-2">
+          <SFormInput
+            control={control}
+            name="brand"
+            placeholder="e.g. Hero"
+            type="text"
+            label="Brand Name"
           />
         </div>
 
@@ -106,18 +103,13 @@ const BasicInformation = ({
             name="description"
             label="Product Description"
             placeholder="Describe your product in detail"
-          
             control={control}
-            onChange={handleInputChange}
           />
         </div>
 
         {/* Price */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="price">
-              Price <span className="text-red-500">*</span>
-            </Label>
             <div className="relative">
               <SFormInput
                 control={control}
@@ -126,35 +118,33 @@ const BasicInformation = ({
                 placeholder="0.00"
                 type="number"
                 label="Price"
-                onChange={handleNumberInputChange}
               />
             </div>
           </div>
         </div>
 
-        {/* SKU and Barcode */}
+        {/*  Sku and Quantity */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <SFormInput
               control={control}
-              name="sku"
-              // value={productInfo?.sku ?? ""}
-              placeholder="e.g. MTB-PRO-2023"
-              onChange={handleInputChange}
-              type="text"
-              label="SKU"
+              name="quantity"
+              // value={productInfo?.barcode ?? ""}
+              placeholder="e.g. 525"
+              // onChange={handleInputChange}
+              type="number"
+              label="Quantity"
             />
           </div>
 
           <div className="space-y-2">
             <SFormInput
               control={control}
-              name="barcode"
-              // value={productInfo?.barcode ?? ""}
-              placeholder="e.g. 123456789012"
-              onChange={handleInputChange}
+              name="sku"
+              // value={productInfo?.sku ?? ""}
+              placeholder="e.g. MTB-PRO-2023"
               type="text"
-              label="Barcode"
+              label="SKU"
             />
           </div>
         </div>
@@ -186,12 +176,15 @@ const BasicInformation = ({
         {/* Featured Switch and Status Select */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex items-center space-x-2">
-            <Switch
-              id="featured"
-              checked={productInfo?.featured}
-              onCheckedChange={onSwitchChange("featured")}
+            <SFormSwitch
+              name="featured"
+              label="Featured Product"
+              control={control}
+              onChange={(checked) => {
+                return handleSwitchChange(checked);
+              }}
+              // onChange={(checked) => handleSwitchChange("featured", checked)}
             />
-            <Label htmlFor="featured">Featured Product</Label>
           </div>
 
           <div className="space-y-2">

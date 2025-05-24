@@ -71,11 +71,11 @@ export type TProductVariant = {
   };
 };
 
-export type TInventory = {
-  quantity: number;
-  lowStockThreshold: number;
-  trackInventory: boolean;
-};
+// export type TInventory = {
+//   quantity: number;
+//   // lowStockThreshold: number;
+//   trackInventory: boolean;
+// };
 
 export type TSeo = {
   title: string;
@@ -90,8 +90,10 @@ export type TBasicInfo = {
   name: string;
   description: string;
   price: number;
+  
+  quantity: number;
   sku: string;
-  barcode?: string;
+  // barcode?: string;
   category: string;
   tags: string[];
   featured: boolean;
@@ -103,8 +105,5 @@ export type TNewProduct = {
   basicInfo: TBasicInfo;
   tags: string[];
   images: string[];
-  inventory: TInventory;
   specifications: TSpecifications;
-  variants: TProductVariant[];
-  seo: TSeo;
 };

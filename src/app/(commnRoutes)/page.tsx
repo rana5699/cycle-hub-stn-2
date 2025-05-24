@@ -56,16 +56,20 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="container py-12 md:py-20">
+      <section className="container py-7 md:py-12">
         <OffersSection />
       </section>
 
-      <section className="container py-12 md:py-20">
+      <section className="container py-7 md:py-12">
         <ExperienceSection />
       </section>
 
-      <TestimonialSection />
-      <NewsletterSection />
+      <section className="container py-7 md:py-12">
+        <TestimonialSection />
+      </section>
+      <section className="container py-7 md:py-12">
+        <NewsletterSection />
+      </section>
     </main>
   );
 }

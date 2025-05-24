@@ -18,8 +18,9 @@ interface IFormInputProps {
   label?: string;
   placeholder?: string;
   control: Control<any>;
-  type?: "text" | "password" | "number" | "email";
+  type?: "text" | "password" | "number" | "email" | "file";
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  className?:any
 }
 
 const SFormInput = ({
@@ -29,6 +30,7 @@ const SFormInput = ({
   control,
   type = "text",
   onChange,
+  className
 }: IFormInputProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -46,6 +48,7 @@ const SFormInput = ({
           <FormControl>
             <div className="relative">
               <Input
+              className={className}
                 type={type === "password" && showPassword ? "text" : type}
                 placeholder={placeholder}
                 {...field}
