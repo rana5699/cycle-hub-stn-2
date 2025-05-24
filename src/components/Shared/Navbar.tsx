@@ -269,10 +269,15 @@ export default function Navbar() {
         <div className="flex items-center space-x-2 md:hidden">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Cart">
-                <ShoppingCart className="w-5 h-5" />
+               <Button
+                className="relative"
+                variant="ghost"
+                size="icon"
+                aria-label="Cart"
+              >
+                <ShoppingCart height={8} width={8} className="w-6 h-8" />
                 {cartItems.length > 0 && (
-                  <Badge className="absolute flex items-center justify-center w-5 h-5 p-0 bg-teal-500 -top-1 -right-1">
+                  <Badge className="absolute flex items-center justify-center bg-teal-500 -right-1 -top-2">
                     {cartItems.length}
                   </Badge>
                 )}

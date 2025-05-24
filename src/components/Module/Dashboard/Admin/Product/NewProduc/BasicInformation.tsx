@@ -170,6 +170,7 @@ const BasicInformation = ({
             label="Product Tags"
             control={control}
             availableTags={availableTags}
+            
           />
         </div>
 

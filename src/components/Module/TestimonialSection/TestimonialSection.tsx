@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import TitleContainer from "@/components/Shared/TitleContainer/TitleContainer";
 
 const testimonials = [
   {
@@ -85,18 +86,16 @@ export default function TestimonialSection() {
   };
 
   return (
-    <section className="py-12 md:py-24 bg-muted">
-      <div className="container">
+    <section className="py-12 md:py-24 bg-muted mt-8">
+      <div className="container  mt-8">
         <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-              What Our Customers Say
-            </h2>
-            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">
-              Hear from cyclists who have experienced the CycleHub difference
-            </p>
-          </div>
+           <TitleContainer
+          title="What Our Customers Say"
+          description="Hear from cyclists who have experienced the CycleHub difference"
+        />
         </div>
+
+       
 
         <div className="relative">
           <div className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 hidden md:block">

@@ -92,11 +92,11 @@ const SFTagSelector = ({ name, control, availableTags, label }: TagSelectorProps
                     <Badge
                       key={tag}
                       variant="secondary"
-                      className="flex items-center gap-1"
+                      className="flex items-center gap-1 text-white"
                     >
                       {tag}
                       <X
-                        className="h-3 w-3 cursor-pointer"
+                        className="h-3 w-3 cursor-pointer text-white"
                         onClick={() => handleTagToggle(tag)}
                       />
                     </Badge>

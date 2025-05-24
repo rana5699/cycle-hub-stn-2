@@ -6,6 +6,7 @@ import NewsletterSection from "@/components/Module/Home/NewletterSection";
 import OffersSection from "@/components/Module/Home/OfferedSection";
 import FeaturedProducts from "@/components/Module/Products/FeaturedProducts/FeaturedProducts";
 import TestimonialSection from "@/components/Module/TestimonialSection/TestimonialSection";
+import TitleContainer from "@/components/Shared/TitleContainer/TitleContainer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -18,33 +19,22 @@ export default async function HomePage() {
       <HeroSlider products={products} />
 
       <section className="container py-12 md:py-20">
-        <div className="flex flex-col items-center justify-center space-y-4 text-center">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-              Shop by Category
-            </h2>
-            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">
-              Explore our wide range of bicycles and accessories for every type
-              of rider
-            </p>
-          </div>
-        </div>
+        <TitleContainer
+          title="Shop by Category"
+          description="Explore our wide range of bicycles and accessories for every type of rider"
+        />
         <CategorySection />
       </section>
 
-      <section className="container py-12 md:py-20">
-        <div className="flex flex-col items-center justify-center space-y-4 text-center">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-              Featured Products
-            </h2>
-            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">
-              Discover our top-rated bicycles and accessories
-            </p>
-          </div>
+      <section className="container mt-3">
+        <div className="flex flex-col items-center justify-center text-center">
+          <TitleContainer
+            title="Featured Products"
+            description="Discover our top-rated bicycles and accessories"
+          />
         </div>
         <FeaturedProducts products={products} />
-        <div className="flex justify-center mt-10">
+        <div className="flex justify-center mt-8">
           <Link href="/products">
             <Button
               size="lg"
@@ -56,18 +46,18 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="container py-7 md:py-12">
+      <section className="container mt-3 ">
         <OffersSection />
       </section>
 
-      <section className="container py-7 md:py-12">
+      <section className="container mt-3 ">
         <ExperienceSection />
       </section>
 
-      <section className="container py-7 md:py-12">
+      <section className="container mt-3 ">
         <TestimonialSection />
       </section>
-      <section className="container py-7 md:py-12">
+      <section className="container mt-3">
         <NewsletterSection />
       </section>
     </main>
