@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { TNewProduct } from "@/types";
 
 export type TCategory = {
   id: number;
@@ -55,11 +54,7 @@ const categoriesDemo: TCategory[] = [
   },
 ];
 
-export default function CategorySection({
-  products,
-}: {
-  products: TNewProduct[];
-}) {
+export default function CategorySection() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: "left" | "right") => {
@@ -73,25 +68,25 @@ export default function CategorySection({
     }
   };
 
-  const categoryImages: Record<string, string> = {
-    Road: "https://i.ibb.co/qLtFv0Tr/images.jpg",
-    Mountain: "https://i.ibb.co/1JLg2nB5/images-1.jpg",
-    Electric: "https://i.ibb.co/hFvDkYdQ/images-2.jpg",
-    Hybrid: "https://i.ibb.co/RpW1xrn8/images-3.jpg",
-    BMX: "https://i.ibb.co/cSQ9z8Dv/images-4.jpg",
-    Accessories: "https://i.ibb.co/spZpPKTz/yamaha-bike-accessories.jpg",
-  };
+  // const categoryImages: Record<string, string> = {
+  //   Road: "https://i.ibb.co/qLtFv0Tr/images.jpg",
+  //   Mountain: "https://i.ibb.co/1JLg2nB5/images-1.jpg",
+  //   Electric: "https://i.ibb.co/hFvDkYdQ/images-2.jpg",
+  //   Hybrid: "https://i.ibb.co/RpW1xrn8/images-3.jpg",
+  //   BMX: "https://i.ibb.co/cSQ9z8Dv/images-4.jpg",
+  //   Accessories: "https://i.ibb.co/spZpPKTz/yamaha-bike-accessories.jpg",
+  // };
 
-  const uniqueCategories = Array.from(
-    new Set(products?.map((p) => p?.basicInfo?.category))
-  );
+  // const uniqueCategories = Array.from(
+  //   new Set(products?.map((p) => p?.basicInfo?.category))
+  // );
 
-  const categories: TCategory[] = uniqueCategories?.map((name, index) => ({
-    id: index + 1,
-    name,
-    image: categoryImages[name] || "/placeholder.svg",
-    link: `/products/category/${name?.toLowerCase().replace(/\s+/g, "-")}`,
-  }));
+  // const categories: TCategory[] = uniqueCategories?.map((name, index) => ({
+  //   id: index + 1,
+  //   name,
+  //   image: categoryImages[name] || "/placeholder.svg",
+  //   link: `/products/category/${name?.toLowerCase().replace(/\s+/g, "-")}`,
+  // }));
 
 
   return (

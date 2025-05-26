@@ -18,25 +18,26 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import ProductCard from "./ProductCard";
-import { TProduct } from "@/types";
+import { TNewProduct } from "@/types";
 
-
-
-export default function ProductsGrid({products}:{products:TProduct[]}) {
+export default function ProductsGrid({
+  products,
+}: {
+  products: TNewProduct[];
+}) {
   const [sortOption, setSortOption] = useState("featured");
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 6;
-
 
   // Sort products based on selected option
   const sortedProducts = [...products].sort((a, b) => {
     switch (sortOption) {
       case "price-low":
-        return a.price - b.price;
+        return a?.basicInfo?.price - b.basicInfo?.price;
       case "price-high":
-        return b.price - a.price;
-      case "rating":
-        return b.rating - a.rating;
+        return b.basicInfo?.price - a.basicInfo?.price;
+      // case "rating":
+      //   return b.rating - a.rating;
       case "newest":
         return b.createdAt ? 1 : -1;
       default: // featured

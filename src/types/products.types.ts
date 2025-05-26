@@ -68,7 +68,6 @@ export type TBasicInfo = {
   brand:string;
   quantity: number;
   sku: string;
-  // barcode?: string;
   category: string;
   tags: string[];
   featured: boolean;
@@ -84,6 +83,10 @@ export type TNewProduct = {
   specifications: TSpecifications;
   inStock: boolean;
   isDeleted: boolean;
+  createdBy?: string;
+  updatedBy?: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 

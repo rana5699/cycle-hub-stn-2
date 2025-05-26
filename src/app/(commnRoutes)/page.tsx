@@ -24,7 +24,7 @@ export default async function HomePage() {
           title="Shop by Category"
           description="Explore our wide range of bicycles and accessories for every type of rider"
         />
-        <CategorySection products={products} />
+        <CategorySection />
       </section>
 
       <section className="container mt-3">

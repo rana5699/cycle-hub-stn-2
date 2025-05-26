@@ -35,6 +35,8 @@ interface ProductFormProps {
 
 // Default empty product
 const emptyProduct: TNewProduct = {
+  _id: "",
+  isDeleted: false,
   basicInfo: {
     name: "",
     description: "",
@@ -42,6 +44,7 @@ const emptyProduct: TNewProduct = {
     quantity: 0,
     sku: "",
     category: "",
+    brand: "",
     tags: [],
     featured: false,
     status: "draft",
@@ -49,6 +52,11 @@ const emptyProduct: TNewProduct = {
   tags: [],
   images: [],
   specifications: {},
+  inStock: false,
+  createdBy: "",
+  updatedBy: "",
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 };
 
 export default function ProductForm({
@@ -147,7 +155,6 @@ export default function ProductForm({
 
     console.log(productData, "productData");
   };
-
 
   return (
     <Form {...form}>
