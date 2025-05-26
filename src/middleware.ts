@@ -11,9 +11,7 @@ export function middleware(request: NextRequest) {
   }
 
   try {
-
     const decoded = decodeToken(token);
-
 
     if (!decoded || !decoded.userId || !decoded.role) {
       return NextResponse.redirect(new URL("/login", request.url));
@@ -23,23 +21,21 @@ export function middleware(request: NextRequest) {
     const pathName = request.nextUrl.pathname;
 
     if (pathName.startsWith("/admin") && userRole !== "admin") {
-       return NextResponse.redirect(new URL("/login", request.url));
-    }
-
-     if (pathName.startsWith("/user") && userRole !== "customer") {
       return NextResponse.redirect(new URL("/login", request.url));
     }
- 
+
+    if (pathName.startsWith("/user") && userRole !== "customer") {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+
     return NextResponse.next();
-    
   } catch (error) {
     console.error("Error validating token:", error);
     return NextResponse.redirect(new URL("/login", request.url));
-    
   }
 }
 
 // See "Matching Paths" below to learn more
 export const config = {
- matcher: ["/admin/:path*", "/user/:path*"],
+  matcher: ["/admin/:path*", "/user/:path*", "/checkout"],
 };

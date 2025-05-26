@@ -1,41 +1,45 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
 
-import { useState } from "react"
-import { Heart, Minus, Plus, ShoppingCart } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useCart } from "@/components/Module/Providers/CartProvider"
+"use client";
 
+import { useState } from "react";
+import { Heart, Minus, Plus, ShoppingCart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useCart } from "@/components/Module/Providers/CartProvider";
+import { toast } from "sonner";
+import { TNewProduct } from "@/types";
 
-export default function AddToCartButton({ product }: any) {
-  const [quantity, setQuantity] = useState(1)
-  const [isWishlisted, setIsWishlisted] = useState(false)
-  const { addToCart } = useCart()
+export default function AddToCartButton({ product }: {
+  product: TNewProduct;}) {
+  const [quantity, setQuantity] = useState(1);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { addToCart } = useCart();
 
   const decreaseQuantity = () => {
     if (quantity > 1) {
-      setQuantity(quantity - 1)
+      setQuantity(quantity - 1);
     }
-  }
+  };
 
   const increaseQuantity = () => {
-    setQuantity(quantity + 1)
-  }
+    setQuantity(quantity + 1);
+  };
 
   const handleAddToCart = () => {
     addToCart({
       _id: product._id,
-      name: product?.name,
-      price: product?.price,
-      imageUrl: product?.imageUrl,
+      name: product?.basicInfo?.name,
+      price: product?.basicInfo?.price,
+      imageUrl: product?.images?.[0],
       quantity,
-    })
-  }
+    });
+
+    toast.success(`${product?.basicInfo?.name} added to cart!`);
+  };
 
   const toggleWishlist = () => {
-    setIsWishlisted(!isWishlisted)
-    alert("Item added to wishlist!")
-  }
+    setIsWishlisted(!isWishlisted);
+    toast.success(isWishlisted ? "Removed from Wishlist" : "Added to Wishlist");
+  };
 
   return (
     <div className="space-y-4">
@@ -51,7 +55,12 @@ export default function AddToCartButton({ product }: any) {
             <Minus className="w-4 h-4" />
           </Button>
           <span className="w-12 text-center">{quantity}</span>
-          <Button variant="ghost" size="icon" onClick={increaseQuantity} className="w-10 h-10 rounded-none">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={increaseQuantity}
+            className="w-10 h-10 rounded-none"
+          >
             <Plus className="w-4 h-4" />
           </Button>
         </div>
@@ -66,10 +75,19 @@ export default function AddToCartButton({ product }: any) {
           Add to Cart
         </Button>
 
-        <Button variant="outline" size="icon" onClick={toggleWishlist} className="h-[42px] w-[42px]">
-          <Heart className={`h-5 w-5 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={toggleWishlist}
+          className="h-[42px] w-[42px]"
+        >
+          <Heart
+            className={`h-5 w-5 ${
+              isWishlisted ? "fill-red-500 text-red-500" : ""
+            }`}
+          />
         </Button>
       </div>
     </div>
-  )
+  );
 }

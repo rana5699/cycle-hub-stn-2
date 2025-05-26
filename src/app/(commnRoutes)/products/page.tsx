@@ -1,23 +1,29 @@
 "use client";
 import { getAllProducts } from "@/actions/ptoducts";
+import ProductNotFound from "@/components/Module/Products/ProductNotFound";
 import ProductsFilter from "@/components/Module/Products/ProductsFilter";
 import ProductsGrid from "@/components/Module/Products/ProductsGrid";
 import ProductsSkeleton from "@/components/Module/Products/ProductsSkeleton";
-import { TProduct } from "@/types";
+import { TNewProduct } from "@/types";
 import { Suspense, useEffect, useState } from "react";
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<TProduct[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<TProduct[]>([]);
+  const [products, setProducts] = useState<TNewProduct[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<TNewProduct[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 3000]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    setLoading(true);
     const fetchProducts = async () => {
       const { data } = await getAllProducts();
+
       setProducts(data);
+
       setFilteredProducts(data);
+      setLoading(false);
     };
     fetchProducts();
   }, []);
@@ -27,22 +33,36 @@ export default function ProductsPage() {
     brands: string[];
     price: [number, number];
   }) => {
+    // setLoading(true);
     const filtered = products.filter((product) => {
       const inCategory =
         filters.categories.length === 0 ||
-        filters.categories.includes(product.type);
+        filters.categories.includes(product?.basicInfo?.category);
 
       const inBrand =
-        filters.brands.length === 0 || filters.brands.includes(product.brand);
+        filters.brands.length === 0 ||
+        filters.brands.includes(product.basicInfo.brand);
 
       const inPrice =
-        product.price >= filters.price[0] && product.price <= filters.price[1];
+        product?.basicInfo?.price >= filters.price[0] &&
+        product?.basicInfo?.price <= filters.price[1];
 
       return inCategory && inBrand && inPrice;
+      // setLoading(false);
     });
 
     setFilteredProducts(filtered);
   };
+
+  // if (loading) {
+  //   return (
+  //     <div className="container my-20">
+  //       {" "}
+  //       <ProductsSkeleton />
+  //     </div>
+  //   );
+  // }
+
   return (
     <main className="flex-1 pt-24">
       <div className="container py-8">
@@ -62,12 +82,14 @@ export default function ProductsPage() {
           <div className="flex-1">
             <h1 className="mb-6 text-3xl font-bold">All Products</h1>
 
-            <Suspense fallback={<ProductsSkeleton />}>
+            <Suspense fallback={loading ? <ProductsSkeleton /> : null}>
+              {loading && <ProductsSkeleton />}
               {filteredProducts.length > 0 ? (
                 <ProductsGrid products={filteredProducts} />
               ) : (
                 // styles and animated product not aviable
-                <h2 className="text-2xl font-semibold">No products found</h2>
+                // <h2 className="text-2xl font-semibold">No products found</h2>
+                <ProductNotFound />
               )}
             </Suspense>
           </div>

@@ -1,4 +1,3 @@
-
 import { getAllProducts } from "@/actions/ptoducts";
 import CategorySection from "@/components/Module/Category/CategorySection";
 import ExperienceSection from "@/components/Module/Home/ExperienceSection";
@@ -13,6 +12,9 @@ import Link from "next/link";
 
 export default async function HomePage() {
   const { data: products } = await getAllProducts();
+
+  // console.log(products);
+
   return (
     <main className="flex-1">
       <HeroSlider products={products} />
@@ -22,7 +24,7 @@ export default async function HomePage() {
           title="Shop by Category"
           description="Explore our wide range of bicycles and accessories for every type of rider"
         />
-        <CategorySection />
+        <CategorySection products={products} />
       </section>
 
       <section className="container mt-3">

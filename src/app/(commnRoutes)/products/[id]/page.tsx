@@ -3,19 +3,19 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Truck, ShieldCheck, ArrowLeft } from "lucide-react";
+import { Star, Truck, ShieldCheck, ArrowLeft, ThumbsUp } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AddToCartButton from "@/components/Shared/Button/AddtoCartButton";
 
 import { useParams } from "next/navigation";
 import { getSingleProduct } from "@/actions/ptoducts";
-import { TProduct } from "@/types";
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { TNewProduct } from "@/types";
 
 export default function ProductPage() {
   const { id } = useParams();
-  const [product, setProduct] = useState<TProduct | null>(null);
+  const [product, setProduct] = useState<TNewProduct | null>(null);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -62,44 +62,45 @@ export default function ProductPage() {
             <div className="relative overflow-hidden border rounded-lg aspect-square">
               <Image
                 src={
-                  product?.imageUrl?.replace("http://", "https://") ||
+                  product?.images?.[0]?.replace("http://", "https://") ||
                   "/placeholder.svg"
                 }
-                alt={product?.name as string}
+                alt={product?.basicInfo?.name as string}
                 fill
                 className="object-cover"
                 priority
               />
             </div>
 
-            {/* <div className="grid grid-cols-4 gap-4">
-              {product.images.map((image, index) => (
+            <div className="grid grid-cols-4 gap-4">
+              {product?.images?.map((image, index) => (
                 <div
                   key={index}
                   className="relative overflow-hidden border rounded-lg cursor-pointer aspect-square hover:border-teal-500"
                 >
                   <Image
-                    src={image || "/placeholder.svg"}
-                    alt={`${product.name} - Image ${index + 1}`}
-                    fill
+                    src={image}
+                    alt={product?.basicInfo?.name as string}
                     className="object-cover"
+                    height={200}
+                    width={200}
                   />
                 </div>
               ))}
-            </div> */}
+            </div>
           </div>
 
           {/* Product Details */}
           <div>
             <div className="mb-6">
-              <h1 className="text-3xl font-bold">{product?.name}</h1>
+              <h1 className="text-3xl font-bold">{product?.basicInfo?.name}</h1>
               <div className="flex items-center mt-2">
                 <div className="flex">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
                       className={`h-5 w-5 ${
-                        i < Math.floor(product?.rating as number)
+                        i < Math.floor(4 as number)
                           ? "fill-amber text-amber"
                           : "text-muted-foreground"
                       }`}
@@ -107,27 +108,29 @@ export default function ProductPage() {
                   ))}
                 </div>
                 <span className="ml-2 text-sm text-muted-foreground">
-                  {product?.rating as number}
-                  {/* ({product.reviews} reviews) */}
+                  {4 as number}
+                  (3 reviews)
                 </span>
               </div>
 
               <div className="mt-4">
                 <span className="text-3xl font-bold">
-                  ${product?.price.toFixed(2)}
+                  ${product?.basicInfo?.price.toFixed(2)}
                 </span>
                 <span className="ml-2 text-sm text-muted-foreground">
-                  {(product?.quantity ?? 0) > 0
-                    ? `In stock (${product?.quantity ?? 0} available)`
+                  {(product?.basicInfo?.quantity ?? 0) > 0
+                    ? `In stock (${
+                        product?.basicInfo?.quantity ?? 0
+                      } available)`
                     : "Out of stock"}
                 </span>
               </div>
             </div>
 
             <div className="space-y-6">
-              <div>
+              {/* <div>
                 <h3 className="mb-2 text-sm font-medium">Color</h3>
-                {/* <div className="flex space-x-2">
+                <div className="flex space-x-2">
                   {product.colors.map((color) => (
                     <div
                       key={color.value}
@@ -135,19 +138,8 @@ export default function ProductPage() {
                       title={color.name}
                     />
                   ))}
-                </div> */}
-              </div>
-
-              <div>
-                <h3 className="mb-2 text-sm font-medium">Size</h3>
-                {/* <div className="flex space-x-2">
-                  {product.sizes.map((size) => (
-                    <Button key={size} variant="outline" className="w-12 h-12">
-                      {size}
-                    </Button>
-                  ))}
-                </div> */}
-              </div>
+                </div>
+              </div> */}
 
               <div className="pt-4">
                 {product && <AddToCartButton product={product} />}
@@ -181,14 +173,199 @@ export default function ProductPage() {
         <Tabs defaultValue="description" className="mt-12">
           <TabsList className="justify-start w-full border-b rounded-none">
             <TabsTrigger value="description">Description</TabsTrigger>
-            <TabsTrigger value="features">Features</TabsTrigger>
             <TabsTrigger value="specifications">Specifications</TabsTrigger>
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
           </TabsList>
           <TabsContent value="description" className="py-6">
-            <p className="text-lg leading-relaxed">{product?.description}</p>
+            <p className="text-lg leading-relaxed">
+              {product?.basicInfo?.description}
+            </p>
           </TabsContent>
+          <TabsContent value="specifications" className="py-6">
         
+
+            <div className="">
+              <div>
+                <div className="space-y-3">
+                  {Object.entries(product?.specifications ?? {}).map(
+                    ([key, value]) => (
+                      <div
+                        key={key}
+                        className="flex justify-between py-2 border-b border-gray-100"
+                      >
+                        <span className="text-muted-foreground capitalize">
+                          {key.replace(/([A-Z])/g, " $1")}
+                        </span>
+                        <span className="font-medium">{value}</span>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="reviews" className="py-6">
+            <div className="space-y-8">
+              {/* Reviews Summary */}
+              <div className="flex flex-col md:flex-row gap-8">
+                <div className="md:w-1/3">
+                  <div className="text-center p-6 bg-gray-50 rounded-lg">
+                    <div className="text-4xl font-bold mb-2">4</div>
+                    <div className="flex justify-center mb-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className="h-5 w-5 fill-yellow-400 text-yellow-400"
+                        />
+                      ))}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Based on 3 reviews
+                    </div>
+                  </div>
+                </div>
+
+                <div className="md:w-2/3 space-y-3">
+                  {[
+                    { stars: 5, count: 89, percentage: 70 },
+                    { stars: 4, count: 28, percentage: 22 },
+                    { stars: 3, count: 7, percentage: 6 },
+                    { stars: 2, count: 2, percentage: 1 },
+                    { stars: 1, count: 1, percentage: 1 },
+                  ].map((rating) => (
+                    <div key={rating.stars} className="flex items-center gap-3">
+                      <div className="flex items-center gap-1 w-16">
+                        <span className="text-sm">{rating.stars}</span>
+                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                      </div>
+                      <div className="flex-1 bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-yellow-400 h-2 rounded-full"
+                          style={{ width: `${rating.percentage}%` }}
+                        />
+                      </div>
+                      <span className="text-sm text-muted-foreground w-8">
+                        {rating.count}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Individual Reviews */}
+              <div className="space-y-6">
+                <div className="border-b pb-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+                      JD
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-semibold">John Doe</span>
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className="h-4 w-4 fill-yellow-400 text-yellow-400"
+                            />
+                          ))}
+                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          2 weeks ago
+                        </span>
+                      </div>
+                      <p className="text-muted-foreground mb-2">
+                        &quot;Excellent bike! The build quality is outstanding
+                        and it rides incredibly smooth. Perfect for my daily
+                        commute and weekend adventures. Highly recommend!&quot;
+                      </p>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <button className="flex items-center gap-1 hover:text-foreground">
+                          <ThumbsUp className="h-4 w-4" />
+                          Helpful (12)
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-b pb-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold">
+                      SM
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-semibold">Sarah Miller</span>
+                        <div className="flex">
+                          {[1, 2, 3, 4].map((star) => (
+                            <Star
+                              key={star}
+                              className="h-4 w-4 fill-yellow-400 text-yellow-400"
+                            />
+                          ))}
+                          <Star className="h-4 w-4 text-gray-300" />
+                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          1 month ago
+                        </span>
+                      </div>
+                      <p className="text-muted-foreground mb-2">
+                        &quot;Great value for money. The bike arrived
+                        well-packaged and assembly was straightforward. Only
+                        minor issue was the seat needed adjustment, but overall
+                        very satisfied.&quot;
+                      </p>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <button className="flex items-center gap-1 hover:text-foreground">
+                          <ThumbsUp className="h-4 w-4" />
+                          Helpful (8)
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-b pb-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                      MJ
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-semibold">Mike Johnson</span>
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className="h-4 w-4 fill-yellow-400 text-yellow-400"
+                            />
+                          ))}
+                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          3 weeks ago
+                        </span>
+                      </div>
+                      <p className="text-muted-foreground mb-2">
+                        &quot;Fantastic bike for the price point. The gearing is
+                        smooth, brakes are responsive, and it handles well on
+                        both city streets and light trails. Customer service was
+                        also excellent when I had questions.&quot;
+                      </p>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <button className="flex items-center gap-1 hover:text-foreground">
+                          <ThumbsUp className="h-4 w-4" />
+                          Helpful (15)
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
     </main>

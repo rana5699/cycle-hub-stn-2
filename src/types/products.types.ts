@@ -1,18 +1,4 @@
-export type TProduct = {
-  key?: string;
-  _id?: string;
-  name: string;
-  brand: string;
-  price: number;
-  type: string;
-  imageUrl: string;
-  description: string;
-  quantity: number;
-  rating: number;
-  inStock: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-};
+
 
 export type TUpdateProduct = {
   name?: string;
@@ -38,17 +24,6 @@ export type TAddress = {
   country: string;
 };
 
-export type TOrder = {
-  _id: string;
-  userId: string;
-  address: TAddress;
-  phoneNumber: string;
-  products: TProduct[];
-  totalPrice: number;
-  transactionInfo: TTransactionInfo;
-  createdAt: string;
-  updatedAt: string;
-};
 
 export type TOrderResponse = {
   allOrders: TOrder[];
@@ -90,7 +65,7 @@ export type TBasicInfo = {
   name: string;
   description: string;
   price: number;
-  
+  brand:string;
   quantity: number;
   sku: string;
   // barcode?: string;
@@ -101,6 +76,7 @@ export type TBasicInfo = {
 };
 
 export type TNewProduct = {
+  _id: string;
   id?: string;
   basicInfo: TBasicInfo;
   tags: string[];
@@ -108,4 +84,17 @@ export type TNewProduct = {
   specifications: TSpecifications;
   inStock: boolean;
   isDeleted: boolean;
+};
+
+
+export type TOrder = {
+  _id: string;
+  userId: string;
+  address: TAddress;
+  phoneNumber: string;
+  products: TNewProduct[];
+  totalPrice: number;
+  transactionInfo: TTransactionInfo;
+  createdAt: string;
+  updatedAt: string;
 };

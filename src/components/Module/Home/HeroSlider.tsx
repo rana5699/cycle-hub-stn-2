@@ -7,9 +7,10 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TNewProduct } from "@/types";
 
 
-export default function HeroSlider({ products }: { products: any[] }) {
+export default function HeroSlider({ products }: { products: TNewProduct[] }) {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const nextSlide = () => {
@@ -44,12 +45,12 @@ export default function HeroSlider({ products }: { products: any[] }) {
           <div className="relative w-full h-full">
             <Image
               src={
-                products[currentSlide]?.imageUrl?.replace(
+                products[currentSlide]?.images?.[0]?.replace(
                   "http://",
                   "https://"
                 ) || "/placeholder.svg"
               }
-              alt="Hero Image"
+              alt={products[currentSlide]?.basicInfo?.name || "Hero Image"}
               fill
               priority
               className="object-cover"
@@ -65,17 +66,17 @@ export default function HeroSlider({ products }: { products: any[] }) {
                   className="max-w-lg space-y-4 text-white"
                 >
                   <h1 className="text-4xl font-bold md:text-6xl">
-                    {products[currentSlide].name}
+                    {products[currentSlide].basicInfo?.name || "Featured Product"}
                   </h1>
                   <p className="text-lg md:text-xl">
-                    {products[currentSlide]?.description?.slice(0, 100)}
+                    {products[currentSlide]?.basicInfo?.description?.   slice(0, 100)}
                   </p>
                   <Link href={`products/${products[currentSlide]?._id}`}>
                     <Button
                       size="lg"
                       className="mt-4 bg-gradient-to-r from-navy-blue to-teal-500 hover:from-teal-500 hover:to-navy-blue"
                     >
-                      {products[currentSlide].name}
+                      {products[currentSlide].basicInfo?.name}
                     </Button>
                   </Link>
                 </motion.div>

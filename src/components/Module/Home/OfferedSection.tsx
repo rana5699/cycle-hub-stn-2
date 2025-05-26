@@ -138,15 +138,15 @@ export default function OffersSection() {
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4">
+                <div className="grid grid-cols-2 justify-between items-center gap-4">
                   <div className="flex-1">
                     <p className="text-sm font-medium mb-1">Use code:</p>
                     <div className="bg-muted p-2 rounded-md font-mono text-center">
                       FLASH50
                     </div>
                   </div>
-                  <Link href="/products" className="flex-1">
-                    <Button className="w-full gradient-bg gradient-bg-hover mt-4 sm:mt-auto">
+                  <Link href="/offered" className="flex-1">
+                    <Button className="w-full gradient-bg gradient-bg-hover  sm:mt-auto">
                       Shop Now
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>

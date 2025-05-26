@@ -70,27 +70,27 @@ export default function Navbar() {
     {
       name: "Road Bikes",
       icon: <Bike className="w-5 h-5 mr-2" />,
-      href: "/products/category/road-bikes",
+      href: "/products",
     },
     {
       name: "Mountain Bikes",
       icon: <Bike className="w-5 h-5 mr-2" />,
-      href: "/products/category/mountain-bikes",
+      href: "/products",
     },
     {
       name: "Electric Bikes",
       icon: <Bike className="w-5 h-5 mr-2" />,
-      href: "/products/category/electric-bikes",
+      href: "/products",
     },
     {
       name: "Hybrid Bikes",
       icon: <Bike className="w-5 h-5 mr-2" />,
-      href: "/products/category/hybrid",
+      href: "/products",
     },
     {
       name: "BMX Bikes",
       icon: <Bike className="w-5 h-5 mr-2" />,
-      href: "/products/category/bmx",
+      href: "/products",
     },
     {
       name: "Accessories",

@@ -347,7 +347,7 @@ export default function ExperienceSection() {
               transition={{ duration: 0.6, delay: 0.6 }}
               className="pt-6"
             >
-              <Button className="w-full text-white bg-gradient-to-r from-navy-blue to-teal-500 hover:from-teal-500 hover:to-navy-blue shadow-lg">
+              <Button className="w-full text-white bg-gradient-to-r from-navy-blue to-teal-500 hover:from-teal-500 hover:to-navy-blue shadow-lg cursor-progress">
                 Start Your Journey
                 <motion.div
                   animate={{ x: [0, 5, 0] }}
