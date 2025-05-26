@@ -106,4 +106,6 @@ export type TNewProduct = {
   tags: string[];
   images: string[];
   specifications: TSpecifications;
+  inStock: boolean;
+  isDeleted: boolean;
 };

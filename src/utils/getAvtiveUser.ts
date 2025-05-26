@@ -4,7 +4,7 @@ import { DecodedToken, decodeToken } from "./decodeToken";
 
 export const getActiveUser = (): DecodedToken | null => {
   try {
-     if (typeof window === "undefined") return null; 
+    if (typeof window === "undefined") return null;
     const cookieString = document.cookie;
     const token = getCookieValue("accessToken", cookieString);
     if (!token) return null;

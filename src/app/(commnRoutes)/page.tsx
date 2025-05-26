@@ -1,3 +1,4 @@
+
 import { getAllProducts } from "@/actions/ptoducts";
 import CategorySection from "@/components/Module/Category/CategorySection";
 import ExperienceSection from "@/components/Module/Home/ExperienceSection";
@@ -12,8 +13,6 @@ import Link from "next/link";
 
 export default async function HomePage() {
   const { data: products } = await getAllProducts();
-
-  // console.log(data,"from client")
   return (
     <main className="flex-1">
       <HeroSlider products={products} />

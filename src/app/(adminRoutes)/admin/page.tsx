@@ -1,12 +1,16 @@
-import AdminHome from "@/components/Module/Dashboard/Admin/AdminHome/AdminHome"
+import { getDashboardStats } from "@/actions/Dashboard";
+import AdminHome from "@/components/Module/Dashboard/Admin/AdminHome/AdminHome";
 
+const AdminHomePage = async () => {
+  const data = await getDashboardStats();
 
-const AdminHomePage = () => {
+  console.log("Admin Dashboard Data:", data);
+
   return (
     <div>
       <AdminHome />
     </div>
-  )
-}
+  );
+};
 
-export default AdminHomePage
+export default AdminHomePage;

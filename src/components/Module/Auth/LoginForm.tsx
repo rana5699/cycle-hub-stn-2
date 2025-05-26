@@ -30,13 +30,14 @@ export default function LoginForm() {
     try {
       const res = await userLogin(data);
       if (res.success) {
-        router.push("/");
         setIsLoading(false);
         toast({
           title: "Success",
           description: res.message,
           variant: "default",
         });
+
+        router.push("/");
       } else {
         setIsLoading(false);
         toast({
@@ -45,7 +46,6 @@ export default function LoginForm() {
           variant: "destructive",
         });
       }
-
     } catch (error: any) {
       setIsLoading(false);
       toast({
@@ -55,15 +55,24 @@ export default function LoginForm() {
       });
     }
   };
+  const handleDemoLogin = async (type: "user" | "admin") => {
+    const demoCredentials = {
+      user: { email: "demouser@gmail.com", password: "user1234" },
+      admin: { email: "admin@gmail.com", password: "admin123" },
+    };
 
-  const handleDemoLogin = (type: "user" | "admin") => {
-    setIsLoading(true);
+    const data = demoCredentials[type];
+    if (!data) return;
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      alert(`Demo ${type} login successful!`);
-    }, 1000);
+    // Set form values
+    form.setValue("email", data.email);
+    form.setValue("password", data.password);
+
+    // Optional: Wait for the values to update visually
+    await new Promise((resolve) => setTimeout(resolve, 100)); // small delay for UX
+
+    // Submit the form programmatically
+    await handleSubmit(data);
   };
 
   return (

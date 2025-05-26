@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   ShoppingCart,
-  User,
   Menu,
   X,
   ChevronDown,
@@ -29,25 +28,14 @@ import {
 } from "@/components/ui/navigation-menu";
 import { useCart } from "../Module/Providers/CartProvider";
 import CartDrawer from "../Module/Cart/CartDrawer";
-import { getActiveUser } from "@/utils/getAvtiveUser";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { logoutUser } from "@/actions/Auth";
+import ProfileMenu from "./Profile/ProfileMenu";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
   const { cartItems } = useCart();
-  const user = getActiveUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -110,18 +98,6 @@ export default function Navbar() {
       href: "/products/category/accessories",
     },
   ];
-
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const logOut = async () => {
-    try {
-      await logoutUser();
-    } catch (error: unknown) {
-      console.log(error);
-    }
-  };
 
   return (
     <header className={navbarClasses}>
@@ -186,15 +162,6 @@ export default function Navbar() {
           >
             <Search className="w-5 h-5" />
           </Button>
-          {/* 
-          <Link href="/notifications">
-            <Button variant="ghost" size="icon" aria-label="Notifications">
-              <Bell className="w-5 h-5" />
-              <Badge className="absolute flex items-center justify-center w-5 h-5 p-0 bg-teal-500 -top-1 -right-1">
-                2
-              </Badge>
-            </Button>
-          </Link> */}
 
           <Sheet>
             <SheetTrigger asChild>
@@ -217,59 +184,14 @@ export default function Navbar() {
             </SheetContent>
           </Sheet>
 
-          {user ? (
-            <div className="flex items-center gap-1 md:gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full">
-                    <User className="w-4 h-4 md:h-5 md:w-5" />
-                    <span className="sr-only">{user?.userEmail}</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/profile">Profile</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/change-password">Order History</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/login" onClick={logOut}>
-                      Logout
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden"
-                onClick={toggleMenu}
-              >
-                {isOpen ? (
-                  <X className="w-5 h-5" />
-                ) : (
-                  <Menu className="w-5 h-5" />
-                )}
-              </Button>
-            </div>
-          ) : (
-            <Link href="/login">
-              <Button className="text-white bg-gradient-to-r from-navy-blue to-teal-500 hover:from-teal-500 hover:to-navy-blue">
-                Sign In
-              </Button>
-            </Link>
-          )}
+          <ProfileMenu />
         </div>
 
         {/* Mobile Menu Button */}
         <div className="flex items-center space-x-2 md:hidden">
           <Sheet>
             <SheetTrigger asChild>
-               <Button
+              <Button
                 className="relative"
                 variant="ghost"
                 size="icon"
@@ -407,72 +329,7 @@ export default function Navbar() {
                   <Search className="w-5 h-5" />
                 </Button>
 
-                {/* <Link
-                  href="/notifications"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Notifications"
-                  >
-                    <Bell className="w-5 h-5" />
-                    <Badge className="absolute flex items-center justify-center w-5 h-5 p-0 bg-teal-500 -top-1 -right-1">
-                      2
-                    </Badge>
-                  </Button>
-                </Link> */}
-
-                {user ? (
-                  <div className="flex items-center gap-1 md:gap-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="rounded-full"
-                        >
-                          <User className="w-4 h-4 md:h-5 md:w-5" />
-                          <span className="sr-only">{user?.userEmail}</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                          <Link href="/dashboard/profile">Profile</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href="/change-password">Order History</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                          <Link href="/login" onClick={logOut}>
-                            Logout
-                          </Link>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="md:hidden"
-                      onClick={toggleMenu}
-                    >
-                      {isOpen ? (
-                        <X className="w-5 h-5" />
-                      ) : (
-                        <Menu className="w-5 h-5" />
-                      )}
-                    </Button>
-                  </div>
-                ) : (
-                  <Link href="/login">
-                    <Button className="text-white bg-gradient-to-r from-navy-blue to-teal-500 hover:from-teal-500 hover:to-navy-blue">
-                      Sign In
-                    </Button>
-                  </Link>
-                )}
+                <ProfileMenu />
               </div>
             </div>
           </motion.div>

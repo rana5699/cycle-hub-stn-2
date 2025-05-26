@@ -24,9 +24,9 @@ export default function ProductCard({ product }: { product: TProduct }) {
   const handleAddToCart = () => {
     addToCart({
       _id: product._id!,
-      name: product.name,
-      price: product.price,
-      imageUrl: product.imageUrl,
+      name: product?.name,
+      price: product?.price,
+      imageUrl: product?.imageUrl,
       quantity: 1,
     })
   }
@@ -35,7 +35,7 @@ export default function ProductCard({ product }: { product: TProduct }) {
     <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2 }} className="h-full">
       <div className="flex flex-col h-full overflow-hidden border rounded-lg">
         <div className="relative">
-          <Link href={`/products/${product._id}`}>
+          <Link href={`/products/${product?._id}`}>
             <div className="relative h-[250px] overflow-hidden">
               <Image
                 src={
@@ -44,7 +44,7 @@ export default function ProductCard({ product }: { product: TProduct }) {
                   "https://"
                 ) || "/placeholder.svg"
               }
-                alt={product.name}
+                alt={product?.name}
                 fill
                 className="object-cover transition-transform hover:scale-105"
               />
@@ -52,8 +52,8 @@ export default function ProductCard({ product }: { product: TProduct }) {
           </Link>
 
           <div className="absolute flex flex-col gap-2 top-2 left-2">
-            {/* {product.isNew && <Badge className="bg-teal-500">New</Badge>}
-            {product.isSale && <Badge className="text-white bg-coral">Sale</Badge>} */}
+            {/* {product?.isNew && <Badge className="bg-teal-500">New</Badge>}
+            {product?.isSale && <Badge className="text-white bg-coral">Sale</Badge>} */}
           </div>
 
           <Button
@@ -68,8 +68,8 @@ export default function ProductCard({ product }: { product: TProduct }) {
 
         <div className="flex flex-col flex-1 p-4">
           <div className="mb-1 text-sm text-muted-foreground">{product?.type}</div>
-          <Link href={`/products/${product._id}`}>
-            <h3 className="mb-1 text-lg font-semibold transition-colors hover:text-teal-500">{product.name}</h3>
+          <Link href={`/products/${product?._id}`}>
+            <h3 className="mb-1 text-lg font-semibold transition-colors hover:text-teal-500">{product?.name}</h3>
           </Link>
 
           <div className="flex items-center mb-2">
@@ -78,19 +78,19 @@ export default function ProductCard({ product }: { product: TProduct }) {
                 <Star
                   key={i}
                   className={`h-4 w-4 ${
-                    i < Math.floor(product.rating) ? "fill-amber text-amber" : "text-muted-foreground"
+                    i < Math.floor(product?.rating) ? "fill-amber text-amber" : "text-muted-foreground"
                   }`}
                 />
               ))}
             </div>
-            {/* <span className="ml-1 text-xs text-muted-foreground">({product.reviews})</span> */}
+            {/* <span className="ml-1 text-xs text-muted-foreground">({product?.reviews})</span> */}
           </div>
 
           <div className="flex items-center mt-auto">
-            <span className="text-lg font-bold">${product.price.toFixed(2)}</span>
-            {product.price && (
+            <span className="text-lg font-bold">${product?.price?.toFixed(2)}</span>
+            {product?.price && (
               <span className="ml-2 text-sm line-through text-muted-foreground">
-                ${product.price.toFixed(2)}
+                ${product?.price.toFixed(2)}
               </span>
             )}
           </div>

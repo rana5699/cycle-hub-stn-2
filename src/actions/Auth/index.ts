@@ -13,6 +13,7 @@ export const userRegister = async (data: any) => {
     body: JSON.stringify(data),
   });
   const result = await res.json();
+
   return result;
 };
 

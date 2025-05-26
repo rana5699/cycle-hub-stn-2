@@ -68,7 +68,7 @@ export default function HeroSlider({ products }: { products: any[] }) {
                     {products[currentSlide].name}
                   </h1>
                   <p className="text-lg md:text-xl">
-                    {products[currentSlide].description.slice(0, 100)}
+                    {products[currentSlide]?.description?.slice(0, 100)}
                   </p>
                   <Link href={`products/${products[currentSlide]?._id}`}>
                     <Button
