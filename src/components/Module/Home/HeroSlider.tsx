@@ -11,14 +11,17 @@ import { TNewProduct } from "@/types";
 
 
 export default function HeroSlider({ products }: { products: TNewProduct[] }) {
+  const topFiveProducts = products.slice(0, 5);
+ 
   const [currentSlide, setCurrentSlide] = useState(0);
 
+
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev === products?.length - 1 ? 0 : prev + 1));
+    setCurrentSlide((prev) => (prev === topFiveProducts?.length - 1 ? 0 : prev + 1));
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? products?.length - 1 : prev - 1));
+    setCurrentSlide((prev) => (prev === 0 ? topFiveProducts?.length - 1 : prev - 1));
   };
 
   useEffect(() => {
@@ -29,7 +32,7 @@ export default function HeroSlider({ products }: { products: TNewProduct[] }) {
     return () => clearInterval(interval);
   }, []);
 
-  // console.log(products, "from hero");
+  // console.log(topFiveProducts, "from hero");
 
   return (
     <div className="relative h-[70vh] md:h-[80vh] overflow-hidden">
@@ -45,12 +48,12 @@ export default function HeroSlider({ products }: { products: TNewProduct[] }) {
           <div className="relative w-full h-full">
             <Image
               src={
-                products[currentSlide]?.images?.[0]?.replace(
+                topFiveProducts[currentSlide]?.images?.[0]?.replace(
                   "http://",
                   "https://"
                 ) || "/placeholder.svg"
               }
-              alt={products[currentSlide]?.basicInfo?.name || "Hero Image"}
+              alt={topFiveProducts[currentSlide]?.basicInfo?.name || "Hero Image"}
               fill
               priority
               className="object-cover"
@@ -66,17 +69,17 @@ export default function HeroSlider({ products }: { products: TNewProduct[] }) {
                   className="max-w-lg space-y-4 text-white"
                 >
                   <h1 className="text-4xl font-bold md:text-6xl">
-                    {products[currentSlide].basicInfo?.name || "Featured Product"}
+                    {topFiveProducts[currentSlide]?.basicInfo?.name || "Featured Product"}
                   </h1>
                   <p className="text-lg md:text-xl">
-                    {products[currentSlide]?.basicInfo?.description?.   slice(0, 100)}
+                    {topFiveProducts[currentSlide]?.basicInfo?.description?.   slice(0, 100)}
                   </p>
-                  <Link href={`products/${products[currentSlide]?._id}`}>
+                  <Link href={`products/${topFiveProducts[currentSlide]?._id}`}>
                     <Button
                       size="lg"
                       className="mt-4 bg-gradient-to-r from-navy-blue to-teal-500 hover:from-teal-500 hover:to-navy-blue"
                     >
-                      {products[currentSlide].basicInfo?.name}
+                      {topFiveProducts[currentSlide]?.basicInfo?.name}
                     </Button>
                   </Link>
                 </motion.div>
@@ -87,7 +90,7 @@ export default function HeroSlider({ products }: { products: TNewProduct[] }) {
       </AnimatePresence>
 
       <div className="absolute left-0 right-0 flex justify-center space-x-2 bottom-4">
-        {products?.map((product: any, index: any) => (
+        {topFiveProducts?.map((product: any, index: any) => (
           <Button
             key={product?._id}
             onClick={() => setCurrentSlide(index)}

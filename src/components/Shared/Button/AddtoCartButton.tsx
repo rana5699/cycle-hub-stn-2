@@ -26,7 +26,7 @@ export default function AddToCartButton({ product }: {
 
   const handleAddToCart = () => {
     addToCart({
-      _id: product._id,
+      _id: product._id!,
       name: product?.basicInfo?.name,
       price: product?.basicInfo?.price,
       imageUrl: product?.images?.[0],

@@ -14,13 +14,40 @@ export const myProfile = async () => {
     cache: "no-store",
   });
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch user profile");
-  }
-
   const result = await res.json();
-
-//   console.log(result," User Profile");
 
   return result;
 };
+
+export const getAllUsers = async () => {
+  const cookieStore = cookies();
+  const token = (await cookieStore).get("accessToken")?.value || "";
+
+  const res = await fetch(`${apiUrl}/users`, {
+    method: "GET",
+    headers: {
+      Authorization: token,
+    },
+    cache: "no-store",
+  });
+
+  const result = await res.json();
+  return result;
+};
+
+// export const updateUserStatus = async (id, updatedData) => {
+//   const cookieStore = cookies();
+//   const token = (await cookieStore).get("accessToken")?.value || "";
+
+//   const res = await fetch(`${apiUrl}/users/${id}`, {
+//     method: "PATCH",
+//     headers: {
+//       "Content-Type": "application/json",
+//       Authorization: token,
+//     },
+//     body: JSON.stringify(updatedData),
+//   });
+
+//   const result = await res.json();
+//   return result;
+// };

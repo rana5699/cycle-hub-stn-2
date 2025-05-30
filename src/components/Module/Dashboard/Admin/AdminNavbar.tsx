@@ -5,6 +5,7 @@ import {
   Home,
   Menu,
   Package,
+  Settings,
   ShoppingCart,
   Users,
 } from "lucide-react";
@@ -21,37 +22,34 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
+
+import ProfileMenu from "@/components/Shared/Profile/ProfileMenu";
 import { getActiveUser } from "@/utils/getAvtiveUser";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { logoutUser } from "@/actions/Auth";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const navItems = [
-  { name: "Dashboard", href: "/admin", icon: Home },
-  { name: "Products", href: "/admin/products", icon: Package },
-  { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
-  { name: "Customers", href: "/admin/customers", icon: Users },
+  { name: "Dashboard", href: "/dashboard/admin", icon: Home },
+  { name: "Products", href: "/dashboard/admin/products", icon: Package },
+  { name: "Orders", href: "/dashboard/admin/orders", icon: ShoppingCart },
+  { name: "Customers", href: "/dashboard/admin/customers", icon: Users },
+  { name: "Profile", href: "/dashboard/admin/profile", icon: Users },
+  { name: "Settings", href: "/dashboard/admin/settings", icon: Settings },
+];
+
+// user navItems
+const userNavItems = [
+  {
+    name: "Orders  History",
+    href: "/dashboard/user/orders",
+    icon: ShoppingCart,
+  },
+  { name: "Profile", href: "/dashboard/user/profile", icon: Users },
+  { name: "Settings", href: "/dashboard/user/settings", icon: Settings },
 ];
 const AdminNavbar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const user = getActiveUser();
 
   const pathname = usePathname();
-
-  const logOut = async () => {
-    try {
-      await logoutUser();
-    } catch (error: unknown) {
-      console.log(error);
-    }
-  };
+  const user = getActiveUser();
 
   return (
     <div className="">
@@ -71,7 +69,11 @@ const AdminNavbar = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
             >
-              CycleHub Admin
+              {user && user?.role === "admin"
+                ? "CycleHub Admin"
+                : user && user?.role === "customer"
+                ? "CycleHub User"
+                : "CycleHub"}
             </motion.h2>
           )}
           <Button
@@ -88,22 +90,54 @@ const AdminNavbar = () => {
           </Button>
         </div>
         <nav className="flex-1 p-2 space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
-                pathname === item.href
-                  ? "gradient-bg text-white"
-                  : "hover:bg-muted"
-              )}
-            >
-              <item.icon size={20} />
-              {!isCollapsed && <span>{item.name}</span>}
-            </Link>
-          ))}
+          {user &&
+            user?.role === "admin" &&
+            navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+                  pathname === item.href
+                    ? "gradient-bg text-white"
+                    : "hover:bg-muted"
+                )}
+              >
+                <item.icon size={20} />
+                {!isCollapsed && <span>{item.name}</span>}
+              </Link>
+            ))}
+
+          {user &&
+            user?.role === "customer" &&
+            userNavItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+                  pathname === item.href
+                    ? "gradient-bg text-white"
+                    : "hover:bg-muted"
+                )}
+              >
+                <item.icon size={20} />
+                {!isCollapsed && <span>{item.name}</span>}
+              </Link>
+            ))}
         </nav>
+
+        <div className="flex items-center justify-between p-4 border-t">
+          <Link
+            href="/"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
+          >
+            Home
+            <span>
+              <Home size={20} />
+            </span>
+          </Link>
+        </div>
       </motion.aside>
       {/* Mobile Sidebar */}
       <Sheet>
@@ -147,51 +181,12 @@ const AdminNavbar = () => {
                 </Link>
               ))}
             </nav>
+            <ProfileMenu />
           </div>
 
           {/* Footer */}
           <SheetFooter className="p-4 border-t space-y-3">
-            {user ? (
-              <div className="">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full"
-                    >
-                      {/* Avatar */}
-                      <Avatar>
-                        <AvatarImage src={""} alt={user?.userEmail} />
-                        <AvatarFallback>{user?.role?.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/dashboard/profile">Profile</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/change-password">Order History</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/login" onClick={logOut}>
-                        Logout
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            ) : (
-              <Link href="/login">
-                <Button className="text-white bg-gradient-to-r from-navy-blue to-teal-500 hover:from-teal-500 hover:to-navy-blue">
-                  Sign In
-                </Button>
-              </Link>
-            )}
+            <ProfileMenu />
           </SheetFooter>
         </SheetContent>
       </Sheet>

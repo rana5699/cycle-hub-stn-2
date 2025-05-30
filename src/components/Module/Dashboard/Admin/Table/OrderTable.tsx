@@ -25,106 +25,88 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TOrder, TOrderResponse } from "@/types";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import Pagination from "@/components/Shared/Pagination";
+import { useMemo, useState } from "react";
+import { confirmOrder, rejectOrder } from "@/actions/Order";
+import { useToast } from "@/hooks/use-toast";
 
+export default function OrderTable({ orders }: { orders: TOrderResponse }) {
+  const { toast } = useToast()
+  const [filterStatus, setFilterStatus] = useState("all");
 
-interface Order {
-  id: string;
-  customer: string;
-  date: string;
-  total: number;
-  items: number;
-  status: "Processing" | "Shipped" | "Delivered" | "Cancelled";
-  paymentStatus: "Paid" | "Pending" | "Failed";
-}
+  const filteredOrders = useMemo(() => {
+    if (filterStatus === "all") return orders?.result || [];
+    return orders?.result?.filter(
+      (order) => order?.orderIntent === filterStatus
+    );
+  }, [orders?.result, filterStatus]);
 
-export default function OrderTable() {
-  // const [searchTerm, setSearchTerm] = useState("");
+  const pendingCount = orders?.result?.filter(
+    (o) => o?.orderIntent === "Pending"
+  )?.length;
+  const deliveredCount = orders?.result?.filter(
+    (o) => o?.orderIntent === "Delivered"
+  )?.length;
+  const confirmCount = orders?.result?.filter(
+    (o) => o?.orderIntent === "Confirmed"
+  ).length;
 
-  // Sample order data
-  const orders: Order[] = [
-    {
-      id: "ORD-001",
-      customer: "John Doe",
-      date: "2023-05-20",
-      total: 1299.99,
-      items: 1,
-      status: "Delivered",
-      paymentStatus: "Paid",
-    },
-    {
-      id: "ORD-002",
-      customer: "Jane Smith",
-      date: "2023-05-19",
-      total: 2199.99,
-      items: 1,
-      status: "Processing",
-      paymentStatus: "Paid",
-    },
-    {
-      id: "ORD-003",
-      customer: "Robert Johnson",
-      date: "2023-05-18",
-      total: 89.99,
-      items: 1,
-      status: "Shipped",
-      paymentStatus: "Paid",
-    },
-    {
-      id: "ORD-004",
-      customer: "Emily Davis",
-      date: "2023-05-17",
-      total: 899.99,
-      items: 1,
-      status: "Delivered",
-      paymentStatus: "Paid",
-    },
-    {
-      id: "ORD-005",
-      customer: "Michael Wilson",
-      date: "2023-05-16",
-      total: 49.99,
-      items: 1,
-      status: "Processing",
-      paymentStatus: "Pending",
-    },
-    {
-      id: "ORD-006",
-      customer: "Sarah Brown",
-      date: "2023-05-15",
-      total: 1599.99,
-      items: 2,
-      status: "Cancelled",
-      paymentStatus: "Failed",
-    },
-    {
-      id: "ORD-007",
-      customer: "David Miller",
-      date: "2023-05-14",
-      total: 129.99,
-      items: 3,
-      status: "Delivered",
-      paymentStatus: "Paid",
-    },
-    {
-      id: "ORD-008",
-      customer: "Lisa Taylor",
-      date: "2023-05-13",
-      total: 799.99,
-      items: 1,
-      status: "Shipped",
-      paymentStatus: "Paid",
-    },
-  ];
+  const handleOrderStatusChange = async (
+    orderId: string,
+    newStatus: string
+  ) => {
+    const updatedOrders = orders?.result?.map((order) => {
+      if (order._id === orderId) {
+        return { ...order, orderIntent: newStatus };
+      }
+      return order;
+    });
 
-  // const filteredProducts = products.filter(
-  //   (ord) =>
-  //     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     product.id.toLowerCase().includes(searchTerm.toLowerCase())
-  // );
+    // console.log(newStatus," Updated Orders");
+
+    if (newStatus === "Confirmed") {
+      // Handle Confirm logic here
+      const res = await confirmOrder(orderId);
+      if (res?.success) {
+        toast({
+          description: "Order confirmed successfully!",
+          variant: "default",
+        })
+      } else {
+        toast({
+          description: "Failed to confirm order.",
+          variant: "destructive",
+        })
+      }
+    }
+    if (newStatus === "Rejected") {
+      const res = await rejectOrder(orderId);
+      if (res?.success) {
+        toast({
+          description: "Order rejected successfully!",
+          variant: "default",
+        });
+      } else {
+        toast({
+          description: "Failed to reject order.",
+          variant: "destructive",
+        });
+      }
+    }
+
+    return updatedOrders;
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <motion.h1
           className="text-3xl font-bold gradient-text"
@@ -150,7 +132,9 @@ export default function OrderTable() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{orders.length}</div>
+              <div className="text-2xl font-bold">
+                {orders?.result?.length || 0}
+              </div>
             </CardContent>
           </Card>
         </motion.div>
@@ -163,12 +147,10 @@ export default function OrderTable() {
         >
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Processing</CardTitle>
+              <CardTitle className="text-sm font-medium">Pending</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {orders.filter((o) => o.status === "Processing").length}
-              </div>
+              <div className="text-2xl font-bold">{pendingCount}</div>
             </CardContent>
           </Card>
         </motion.div>
@@ -181,12 +163,10 @@ export default function OrderTable() {
         >
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Shipped</CardTitle>
+              <CardTitle className="text-sm font-medium">Delivered</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {orders.filter((o) => o.status === "Shipped").length}
-              </div>
+              <div className="text-2xl font-bold">{deliveredCount}</div>
             </CardContent>
           </Card>
         </motion.div>
@@ -199,38 +179,39 @@ export default function OrderTable() {
         >
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Delivered</CardTitle>
+              <CardTitle className="text-sm font-medium">Confirm</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {orders.filter((o) => o.status === "Delivered").length}
-              </div>
+              <div className="text-2xl font-bold">{confirmCount}</div>
             </CardContent>
           </Card>
         </motion.div>
       </div>
 
-      <Card>
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Order Inventory</CardTitle>
           <CardDescription>Manage your orders</CardDescription>
           <div className="flex flex-col sm:flex-row w-full items-start sm:items-center gap-4 mt-4">
-            <Select defaultValue="all">
+            <Select
+              defaultValue="all"
+              onValueChange={(value) => setFilterStatus(value)}
+            >
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="in-stock">Processing</SelectItem>
-                <SelectItem value="low-stock">Shipped</SelectItem>
-                <SelectItem value="out-of-stock">Delivered</SelectItem>
-                <SelectItem value="out-of-stock">Cancelled</SelectItem>
+                <SelectItem value="Pending">Pending</SelectItem>
+                <SelectItem value="Delivered">Delivered</SelectItem>
+                <SelectItem value="Confirm">Confirm</SelectItem>
+                <SelectItem value="Reject">Rejected</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </CardHeader>
         <CardContent className="overflow-x-auto">
-          <Table className="">
+          <Table className="w-full">
             <TableHeader>
               <TableRow>
                 <TableHead>Order ID</TableHead>
@@ -238,96 +219,94 @@ export default function OrderTable() {
                 <TableHead className="hidden sm:table-cell">Date</TableHead>
                 <TableHead className="hidden sm:table-cell">Items</TableHead>
                 <TableHead className="hidden sm:table-cell">Total</TableHead>
-                <TableHead>Status</TableHead>
-                {/* <TableHead className="text-right">Actions</TableHead> */}
+                <TableHead className="hidden sm:table-cell">Status</TableHead>
+                <TableHead className="hidden sm:table-cell">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {orders.map((product) => (
-                <TableRow key={product.id} className="">
-                  <TableCell>{product.id}</TableCell>
-                  <TableCell>
-                    <div className="font-medium">{product.customer}</div>
-                    <div className="sm:hidden text-muted-foreground">
-                      {product.date}
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell">
-                    {product.items}
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell">
-                    ${product.total.toFixed(2)}
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell">
-                    {product.status}
-                  </TableCell>
-                  <TableCell>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        product.status === "Delivered"
-                          ? "bg-green-100 text-green-700"
-                          : product.status === "Processing"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {product.status}
-                    </span>
-                  </TableCell>
-                  {/* <TableCell className="flex sm:justify-end py-4">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-40">
-                        <DropdownMenuItem asChild>
-                          <Link href={`/admin/products/${product.id}/edit`}>
-                            <div className="flex items-center gap-2 cursor-pointer">
-                              <Edit  className="w-3.5 h-3.5 cursor-pointer" />
-                              Edit
-                            </div>
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600 focus:text-red-600">
-                          <Trash2 className="w-3.5 h-3.5 mr-2 cursor-pointer" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell> */}
-                </TableRow>
-              ))}
+              {filteredOrders?.length === 0 ? (
+                <div className="mx-auto mt-5 w-full flex items-center justify-center">
+                  No orders found
+                </div>
+              ) : (
+                filteredOrders?.map((product: TOrder) => (
+                  <TableRow key={product?._id} className="">
+                    <TableCell>{product?._id}</TableCell>
+                    <TableCell>
+                      <div className="font-medium">
+                        {/* {product?.userId}
+                         */}
+                        Unknown User
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell">
+                      {new Date(product?.createdAt).toLocaleString()}
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell">
+                      {product?.products?.length} Items
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell">
+                      ${product?.totalPrice?.toFixed(2)}
+                    </TableCell>
+
+                    <TableCell>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          product?.orderIntent === "Pending"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : product?.orderIntent === "Delivered"
+                            ? "bg-blue-100 text-blue-800"
+                            : product?.orderIntent === "Confirmed"
+                            ? "bg-green-100 text-green-800"
+                            : product?.orderIntent === "Rejected"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {product?.orderIntent}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="text-sm capitalize"
+                          >
+                            {product?.orderIntent}
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          {(product.orderIntent === "Pending"
+                            ? ["Confirmed", "Delivered", "Rejected"]
+                            : product.orderIntent === "Confirmed"
+                            ? ["Delivered"]
+                            : product.orderIntent === "Rejected"
+                            ? ["Confirm", "Delivered"]
+                            : []
+                          ) // For Delivered or unknown statuses, no further actions
+                            .map((status) => (
+                              <DropdownMenuItem
+                                key={status}
+                                onClick={() =>
+                                  handleOrderStatusChange(product._id, status)
+                                }
+                              >
+                                {status}
+                              </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
-      {/* <div className="flex items-center justify-between mt-4 px-2">
-        <p className="text-sm text-muted-foreground">
-          Showing <span className="font-medium">{filteredProducts.length}</span>{" "}
-          of <span className="font-medium">{products.length}</span> products
-        </p>
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm" disabled>
-            <ChevronLeft className="h-4 w-4" />
-            <span className="sr-only">Previous Page</span>
-          </Button>
-          <Button variant="outline" size="sm" className="w-8 h-8 p-0">
-            1
-          </Button>
-          <Button variant="outline" size="sm" className="w-8 h-8 p-0">
-            2
-          </Button>
-          <Button variant="outline" size="sm" className="w-8 h-8 p-0">
-            3
-          </Button>
-          <Button variant="outline" size="sm">
-            <ChevronRight className="h-4 w-4" />
-            <span className="sr-only">Next Page</span>
-          </Button>
-        </div>
-      </div> */}
+
+      <Pagination meta={orders?.meta} />
     </div>
   );
 }

@@ -1,16 +1,5 @@
-// export type TUser = {
-//   key?: string;
-//   _id: string;
-//   name: string;
-//   email: string;
-//   role: "admin" | "user";
 
-//   isActive: boolean;
-//   createdAt: string;
-//   updatedAt: string;
-// };
-
-type Role = "customer" | "admin" | "creator"; 
+type Role = "customer" | "admin"; 
 
 export type TUser = {
   createdAt: string;  
@@ -19,6 +8,15 @@ export type TUser = {
   name: string;
   role: Role;       
   updatedAt: string;  
-  __v: number;
   _id: string;
+};
+
+export type TUserResponse = {
+  result : TUser[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }
 };

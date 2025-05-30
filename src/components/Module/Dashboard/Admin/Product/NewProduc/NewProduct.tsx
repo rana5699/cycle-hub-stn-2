@@ -26,6 +26,8 @@ import {
 import useImageUploader from "@/utils/useImageUploader";
 import ImageSectionTab from "./ImageSectionTab";
 import SFormInput from "@/components/Shared/Form/SFormInput";
+import { createProduct } from "@/actions/ptoducts";
+import { toast } from "sonner";
 
 // Types
 interface ProductFormProps {
@@ -35,7 +37,6 @@ interface ProductFormProps {
 
 // Default empty product
 const emptyProduct: TNewProduct = {
-  _id: "",
   isDeleted: false,
   basicInfo: {
     name: "",
@@ -142,19 +143,55 @@ export default function ProductForm({
         brand: data.brand,
         price: Number(data.price),
         sku: data.sku,
-        barcode: data.barcode,
         tags: data.tags,
         quantity: Number(data.quantity),
         featured: data.featured,
         status: data.status,
-        category: selectedCategory,
+        category: selectedCategory || "BMX",
       },
       images: uploadedImageUrl,
       specifications: product.specifications,
     };
 
-    console.log(productData, "productData");
+    try {
+      const response = await createProduct(productData);
+      if (response.success) {
+        form.reset();
+        setProduct(emptyProduct);
+        setProductImageUrl([]);
+        setActiveTab("basic");
+        toast.success(
+          isEditing
+            ? "Product updated successfully!"
+            : "Product created successfully!"
+        );
+        router.push("/dashboard/admin/products");
+      }
+      console.log(response)
+    } catch (error) {
+      console.error("Error saving product:", error);
+    }
   };
+
+  // const isBasicInfoValid = () => {
+  //   const { name, description, price, quantity, sku, category, brand } =
+  //     product.basicInfo;
+  //   return (
+  //     name &&
+  //     description &&
+  //     price > 0 &&
+  //     quantity > 0 &&
+  //     sku &&
+  //     category &&
+  //     brand
+  //   );
+  // };
+
+  // const isImagesValid = () => {
+  //   return Array.isArray(productImageUrl)
+  //     ? productImageUrl.length > 0
+  //     : !!productImageUrl;
+  // };
 
   return (
     <Form {...form}>
@@ -184,7 +221,9 @@ export default function ProductForm({
               <Button
                 type="submit"
                 className="gradient-bg gradient-bg-hover w-full sm:w-auto"
-                disabled={isUploading}
+                disabled={
+                  isUploading 
+                }
               >
                 {isUploading ? (
                   <>
@@ -216,21 +255,17 @@ export default function ProductForm({
               <TabsTrigger
                 value="images"
                 className="data-[state=active]:gradient-bg"
+                // disabled={!isBasicInfoValid()}
               >
                 Images
               </TabsTrigger>
               <TabsTrigger
                 value="specifications"
                 className="data-[state=active]:gradient-bg"
+                // disabled={!isBasicInfoValid() || !isImagesValid()}
               >
                 Specifications
               </TabsTrigger>
-              {/* <TabsTrigger
-                value="seo"
-                className="data-[state=active]:gradient-bg"
-              >
-                SEO
-              </TabsTrigger> */}
             </TabsList>
 
             <div className="grid gap-5 grid-cols-1">
@@ -499,7 +534,9 @@ export default function ProductForm({
                   <Button
                     type="submit"
                     className="w-full gradient-bg gradient-bg-hover"
-                    disabled={isUploading}
+                    disabled={
+                      isUploading 
+                    }
                   >
                     {isUploading ? (
                       <>

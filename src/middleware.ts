@@ -20,11 +20,15 @@ export function middleware(request: NextRequest) {
     const userRole = decoded.role;
     const pathName = request.nextUrl.pathname;
 
-    if (pathName.startsWith("/admin") && userRole !== "admin") {
+    if (pathName.startsWith("/dashboard") && !decoded?.userId) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    if (pathName.startsWith("/user") && userRole !== "customer") {
+    if (pathName.startsWith("/dashboard/admin") && userRole !== "admin") {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    if (pathName.startsWith("/dashboard/user") && userRole !== "customer") {
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
@@ -37,5 +41,10 @@ export function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/admin/:path*", "/user/:path*", "/checkout"],
+  matcher: [
+    "/dashboard",
+    "/dashboard/admin/:path*",
+    "/dashboard/user/:path*",
+    "/checkout",
+  ],
 };

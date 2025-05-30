@@ -11,21 +11,16 @@ import {
 import SFormInput from "@/components/Shared/Form/SFormInput";
 import SFormTextArea from "@/components/Shared/Form/SFormTextArea";
 import { Control } from "react-hook-form";
-import { TBasicInfo } from "@/types";
+import { BicycleCategory, TBasicInfo } from "@/types";
 import SFormSelect from "@/components/Shared/Form/SFormSelect";
 import SFTagSelector from "@/components/Shared/Form/SFTagSelector";
 import SFormSwitch from "@/components/Shared/Form/SFormSwicth";
 
-export const categories = [
-  { value: "mountain-bikes", label: "Mountain Bikes" },
-  { value: "road-bikes", label: "Road Bikes" },
-  { value: "hybrid-bikes", label: "Hybrid Bikes" },
-  { value: "electric-bikes", label: "Electric Bikes" },
-  { value: "accessories", label: "Accessories" },
-  { value: "components", label: "Components" },
-  { value: "clothing", label: "Clothing" },
-  { value: "tools", label: "Tools" },
-];
+
+export const categories = Object.values(BicycleCategory).map((type) => ({
+  label: type,
+  value: type,
+}));
 
 export const availableTags = [
   "new",
@@ -170,7 +165,6 @@ const BasicInformation = ({
             label="Product Tags"
             control={control}
             availableTags={availableTags}
-            
           />
         </div>
 

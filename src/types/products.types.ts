@@ -1,5 +1,3 @@
-
-
 export type TUpdateProduct = {
   name?: string;
   brand?: string;
@@ -24,16 +22,29 @@ export type TAddress = {
   country: string;
 };
 
+export type TUserPurchase ={
+  allOrders: TOrder[];
+  totalOrders: number;
+}
 
 export type TOrderResponse = {
-  allOrders: TOrder[];
-  totalCost: number;
+  result: TOrder[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 };
 
-
-
 // New Product
-
+export enum BicycleCategory {
+  Mountain = "Mountain",
+  Road = "Road",
+  Hybrid = "Hybrid",
+  BMX = "BMX",
+  Electric = "Electric",
+}
 
 export type TProductVariant = {
   id: string;
@@ -65,7 +76,7 @@ export type TBasicInfo = {
   name: string;
   description: string;
   price: number;
-  brand:string;
+  brand: string;
   quantity: number;
   sku: string;
   category: string;
@@ -75,7 +86,7 @@ export type TBasicInfo = {
 };
 
 export type TNewProduct = {
-  _id: string;
+  _id?: string;
   id?: string;
   basicInfo: TBasicInfo;
   tags: string[];
@@ -89,13 +100,13 @@ export type TNewProduct = {
   updatedAt: string;
 };
 
-
 export type TOrder = {
   _id: string;
   userId: string;
   address: TAddress;
   phoneNumber: string;
   products: TNewProduct[];
+  orderIntent: "Confirmed" | "Rejected" | "Delivered" | "Pending";
   totalPrice: number;
   transactionInfo: TTransactionInfo;
   createdAt: string;
