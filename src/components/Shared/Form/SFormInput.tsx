@@ -21,6 +21,8 @@ interface IFormInputProps {
   type?: "text" | "password" | "number" | "email" | "file";
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   className?:any
+  value?:any;
+
 }
 
 const SFormInput = ({
@@ -30,7 +32,8 @@ const SFormInput = ({
   control,
   type = "text",
   onChange,
-  className
+  className,
+  value
 }: IFormInputProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -52,6 +55,7 @@ const SFormInput = ({
                 type={type === "password" && showPassword ? "text" : type}
                 placeholder={placeholder}
                 {...field}
+                value={value || field.value}
                 onChange={(e) => {
                   field.onChange(e);
                   onChange?.(e);

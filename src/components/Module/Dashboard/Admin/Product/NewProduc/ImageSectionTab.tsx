@@ -14,6 +14,7 @@ import { Control } from "react-hook-form";
 interface IProductImageSectionProps {
   control: Control<any>;
   handleAddImage: any;
+  images : string[]
 }
 
 const ImageSectionTab = ({
@@ -36,6 +37,7 @@ const ImageSectionTab = ({
             control={control}
             multiple
             onImageUpload={handleAddImage}
+
           />
         </CardContent>
       </Card>

@@ -11,11 +11,10 @@ import {
 import SFormInput from "@/components/Shared/Form/SFormInput";
 import SFormTextArea from "@/components/Shared/Form/SFormTextArea";
 import { Control } from "react-hook-form";
-import { BicycleCategory, TBasicInfo } from "@/types";
+import { BicycleCategory, } from "@/types";
 import SFormSelect from "@/components/Shared/Form/SFormSelect";
 import SFTagSelector from "@/components/Shared/Form/SFTagSelector";
 import SFormSwitch from "@/components/Shared/Form/SFormSwicth";
-
 
 export const categories = Object.values(BicycleCategory).map((type) => ({
   label: type,
@@ -45,21 +44,9 @@ export const availableTags = [
 
 interface ProductFormBasicInfoProps {
   control: Control<any>;
-  productInfo: TBasicInfo;
-  handleSelectChange: (name: string, value: string) => void;
-  handleSwitchChange: (checked: boolean) => void;
 }
 
-const BasicInformation = ({
-  control,
-  // productInfo,
-  handleSelectChange,
-  handleSwitchChange,
-}: ProductFormBasicInfoProps) => {
-  const onSelectChange = (name: string) => (value: string) => {
-    handleSelectChange(name, value);
-  };
-
+const BasicInformation = ({ control }: ProductFormBasicInfoProps) => {
   return (
     <Card>
       <CardHeader>
@@ -81,7 +68,7 @@ const BasicInformation = ({
           />
         </div>
 
-        {/* Product brand */}
+        {/* Product Brand */}
         <div className="space-y-2">
           <SFormInput
             control={control}
@@ -95,38 +82,33 @@ const BasicInformation = ({
         {/* Product Description */}
         <div className="space-y-2">
           <SFormTextArea
+            control={control}
             name="description"
             label="Product Description"
             placeholder="Describe your product in detail"
-            control={control}
           />
         </div>
 
         {/* Price */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <div className="relative">
-              <SFormInput
-                control={control}
-                name="price"
-                // value={productInfo?.price ?? ""}
-                placeholder="0.00"
-                type="number"
-                label="Price"
-              />
-            </div>
+            <SFormInput
+              control={control}
+              name="price"
+              placeholder="0.00"
+              type="number"
+              label="Price"
+            />
           </div>
         </div>
 
-        {/*  Sku and Quantity */}
+        {/* SKU and Quantity */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <SFormInput
               control={control}
               name="quantity"
-              // value={productInfo?.barcode ?? ""}
               placeholder="e.g. 525"
-              // onChange={handleInputChange}
               type="number"
               label="Quantity"
             />
@@ -136,7 +118,6 @@ const BasicInformation = ({
             <SFormInput
               control={control}
               name="sku"
-              // value={productInfo?.sku ?? ""}
               placeholder="e.g. MTB-PRO-2023"
               type="text"
               label="SKU"
@@ -148,12 +129,11 @@ const BasicInformation = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <SFormSelect
+              control={control}
               name="category"
               label="Category"
               placeholder="Select a category"
-              control={control}
               options={categories}
-              onChange={onSelectChange("category")}
             />
           </div>
         </div>
@@ -161,9 +141,9 @@ const BasicInformation = ({
         {/* Tags Selector */}
         <div className="space-y-2">
           <SFTagSelector
+            control={control}
             name="tags"
             label="Product Tags"
-            control={control}
             availableTags={availableTags}
           />
         </div>
@@ -172,28 +152,23 @@ const BasicInformation = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex items-center space-x-2">
             <SFormSwitch
+              control={control}
               name="featured"
               label="Featured Product"
-              control={control}
-              onChange={(checked) => {
-                return handleSwitchChange(checked);
-              }}
-              // onChange={(checked) => handleSwitchChange("featured", checked)}
             />
           </div>
 
           <div className="space-y-2">
             <SFormSelect
+              control={control}
               name="status"
               label="Product Status"
               placeholder="Select a status"
-              control={control}
               options={[
                 { label: "Active", value: "active" },
                 { label: "Draft", value: "draft" },
                 { label: "Archived", value: "archived" },
               ]}
-              onChange={onSelectChange("status")}
             />
           </div>
         </div>

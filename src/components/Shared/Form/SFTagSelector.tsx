@@ -25,9 +25,16 @@ interface TagSelectorProps {
   control: Control<any>;
   availableTags: string[];
   label?: string;
+  preValue?: string[];
 }
 
-const SFTagSelector = ({ name, control, availableTags, label }: TagSelectorProps) => {
+const SFTagSelector = ({
+  name,
+  control,
+  availableTags,
+  label,
+  preValue = [],
+}: TagSelectorProps) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -37,6 +44,7 @@ const SFTagSelector = ({ name, control, availableTags, label }: TagSelectorProps
       <Controller
         control={control}
         name={name}
+        defaultValue={preValue}
         render={({ field }) => {
           const { value = [], onChange } = field;
 
@@ -59,7 +67,9 @@ const SFTagSelector = ({ name, control, availableTags, label }: TagSelectorProps
                     className="w-full justify-between"
                   >
                     {value.length > 0
-                      ? `${value.length} tag${value.length > 1 ? "s" : ""} selected`
+                      ? `${value.length} tag${
+                          value.length > 1 ? "s" : ""
+                        } selected`
                       : "Select tags"}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
@@ -76,7 +86,10 @@ const SFTagSelector = ({ name, control, availableTags, label }: TagSelectorProps
                             onSelect={() => handleTagToggle(tag)}
                             className="flex items-center"
                           >
-                            <Checkbox checked={value.includes(tag)} className="mr-2" />
+                            <Checkbox
+                              checked={value.includes(tag)}
+                              className="mr-2"
+                            />
                             <span>{tag}</span>
                           </CommandItem>
                         ))}

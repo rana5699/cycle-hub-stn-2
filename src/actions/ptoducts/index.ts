@@ -29,18 +29,19 @@ export const createProduct = async (product: any) => {
 export const updateProduct = async (id: string, product: any) => {
   const cookieStore = cookies();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { _id, ...productData } = product;
+  console.log(product,"product from server");             
 
   const res = await fetch(`${apiUrl}/products/${id}`, {
-    method: "PUT",
+    method: "PATCH",
     headers: {
       "Content-Type": "application/json",
       Authorization: (await cookieStore).get("accessToken")?.value || "",
     },
-    body: JSON.stringify(productData),
+    body: JSON.stringify(product),
   });
   const data = await res.json();
+
+  // console.log(data,"data from server updated")
 
   revalidateTag("products");
   revalidateTag(`product-${id}`);

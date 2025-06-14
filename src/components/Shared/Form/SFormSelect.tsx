@@ -25,6 +25,7 @@ interface SFormSelectProps {
   className?: string;
   disabled?: boolean;
   onChange?: (value: string) => void;
+  value?: string;
 }
 
 const SFormSelect = ({
@@ -36,6 +37,7 @@ const SFormSelect = ({
   className,
   disabled = false,
   onChange,
+  value,
 }: SFormSelectProps) => {
   return (
     <FormField
@@ -50,7 +52,7 @@ const SFormSelect = ({
                 field.onChange(value);
                 onChange?.(value);
               }}
-              value={field.value}
+              value={value || field.value}
               disabled={disabled}
             >
               <SelectTrigger className={className}>

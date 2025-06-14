@@ -92,8 +92,6 @@ export default function ProductsTable({
     }
   };
 
-  
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -210,7 +208,7 @@ export default function ProductsTable({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-40">
                         <DropdownMenuItem asChild>
-                          <Link href={`/admin/products/${product.id}/edit`}>
+                          <Link href={`/dashboard/admin/products/${product?._id}`}>
                             <div className="flex items-center gap-2 cursor-pointer">
                               <Edit className="w-3.5 h-3.5" />
                               Edit
@@ -221,7 +219,7 @@ export default function ProductsTable({
                           onClick={() =>
                             handleDeleteProduct(product._id as string)
                           }
-                          className="text-red-600 focus:text-red-600"
+                          className="text-red-600 focus:text-red-600 cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5 mr-2" />
                           Delete

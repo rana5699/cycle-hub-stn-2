@@ -17,6 +17,7 @@ interface SFormSwitchProps {
   control: Control<any>;
   onChange?: (checked: boolean) => void;
   disabled?: boolean;
+  value?: boolean;
 }
 
 const SFormSwitch = ({
@@ -25,6 +26,8 @@ const SFormSwitch = ({
   control,
   onChange,
   disabled = false,
+  value
+
 }: SFormSwitchProps) => {
   return (
     <FormField
@@ -38,6 +41,7 @@ const SFormSwitch = ({
               id={name}
               checked={field.value || false}
               disabled={disabled}
+              value={value || field.value}
               onCheckedChange={(checked) => {
                 field.onChange(checked);
                 onChange?.(checked);

@@ -26,7 +26,7 @@ import {
 import useImageUploader from "@/utils/useImageUploader";
 import ImageSectionTab from "./ImageSectionTab";
 import SFormInput from "@/components/Shared/Form/SFormInput";
-import { createProduct } from "@/actions/ptoducts";
+import { createProduct, updateProduct } from "@/actions/ptoducts";
 import { toast } from "sonner";
 
 // Types
@@ -37,6 +37,7 @@ interface ProductFormProps {
 
 // Default empty product
 const emptyProduct: TNewProduct = {
+  _id: "",
   isDeleted: false,
   basicInfo: {
     name: "",
@@ -62,7 +63,7 @@ const emptyProduct: TNewProduct = {
 
 export default function ProductForm({
   initialData,
-  isEditing = false,
+  isEditing,
 }: ProductFormProps) {
   const form = useForm({
     defaultValues: initialData || emptyProduct,
@@ -104,6 +105,29 @@ export default function ProductForm({
     }));
   };
 
+  const handleInputChange = (
+    name: string,
+    value: string | number | boolean
+  ) => {
+    setProduct((prev) => ({
+      ...prev,
+      basicInfo: {
+        ...prev.basicInfo,
+        [name]: value,
+      },
+    }));
+  };
+
+  const handleNumberInputChange = (name: string, value: number) => {
+    setProduct((prev) => ({
+      ...prev,
+      basicInfo: {
+        ...prev.basicInfo,
+        [name]: value,
+      },
+    }));
+  };
+
   const handleAddSpecification = () => {
     if (newSpecKey.trim() && newSpecValue.trim()) {
       setProduct((prev) => ({
@@ -135,26 +159,57 @@ export default function ProductForm({
       true
     );
 
+    const basic = data.basicInfo || {};
     const productData = {
-      ...data,
       basicInfo: {
-        name: data.name,
-        description: data.description,
-        brand: data.brand,
-        price: Number(data.price),
-        sku: data.sku,
-        tags: data.tags,
-        quantity: Number(data.quantity),
-        featured: data.featured,
-        status: data.status,
-        category: selectedCategory || "BMX",
+        name: basic.name,
+        description: basic.description,
+        brand: basic.brand,
+        price: Number(basic.price),
+        sku: basic.sku,
+        tags: basic.tags,
+        quantity: Number(basic.quantity),
+        featured: basic.featured,
+        status: basic.status,
+        category: selectedCategory || basic.category || "BMX",
       },
       images: uploadedImageUrl,
-      specifications: product.specifications,
+      specifications: product?.specifications || {},
     };
 
+
     try {
-      const response = await createProduct(productData);
+      let response;
+
+      if (isEditing && initialData?._id) {
+
+        const updatedData = {
+          ...initialData,
+          
+          basicInfo: {
+            ...initialData.basicInfo,
+            ...productData.basicInfo,
+          },
+          images: uploadedImageUrl.length
+            ? uploadedImageUrl
+            : initialData.images,
+          specifications: product?.specifications || initialData.specifications,
+          updatedAt: new Date().toISOString(),
+          updatedBy: "admin",
+        };
+
+        console.log(updatedData, "updatedData");
+
+        response = await updateProduct(initialData._id, updatedData);
+
+        // console.log(response, "response from client");
+
+      } else {
+        response = await createProduct(productData);
+      }
+
+
+
       if (response.success) {
         form.reset();
         setProduct(emptyProduct);
@@ -167,7 +222,7 @@ export default function ProductForm({
         );
         router.push("/dashboard/admin/products");
       }
-      console.log(response)
+      // console.log(response, "FROM client");
     } catch (error) {
       console.error("Error saving product:", error);
     }
@@ -192,6 +247,8 @@ export default function ProductForm({
   //     ? productImageUrl.length > 0
   //     : !!productImageUrl;
   // };
+
+  // console.log(initialData, "isEditing");
 
   return (
     <Form {...form}>
@@ -221,9 +278,7 @@ export default function ProductForm({
               <Button
                 type="submit"
                 className="gradient-bg gradient-bg-hover w-full sm:w-auto"
-                disabled={
-                  isUploading 
-                }
+                disabled={isUploading}
               >
                 {isUploading ? (
                   <>
@@ -272,9 +327,11 @@ export default function ProductForm({
               <div className="lg:col-span-2">
                 <TabsContent value="basic">
                   <BasicInformation
-                    productInfo={product.basicInfo}
-                    handleSelectChange={handleSelectChange}
-                    handleSwitchChange={handleSwitchChange}
+                    // productInfo={product.basicInfo}
+                    // handleSelectChange={handleSelectChange}
+                    // handleSwitchChange={handleSwitchChange}
+                    // handleInputChange={handleInputChange}
+                    // handleNumberInputChange={handleNumberInputChange}
                     control={form.control}
                   />
                 </TabsContent>
@@ -284,6 +341,7 @@ export default function ProductForm({
                   <ImageSectionTab
                     control={form.control}
                     handleAddImage={setProductImageUrl}
+                    images={product?.images}
                   />
                 </TabsContent>
               </div>
@@ -387,156 +445,10 @@ export default function ProductForm({
 
               <div className="lg:col-span-1">
                 <Card className="sticky top-6">
-                  {/* <CardHeader>
-                    <CardTitle>Product Summary</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center gap-4">
-                      <div className="h-16 w-16 rounded-md bg-muted flex items-center justify-center overflow-hidden">
-                        {product?.images?.length > 0 ? (
-                          <Image
-                            src={product?.images[0] || "/placeholder.svg"}
-                            alt={product?.basicInfo?.name}
-                            className="h-full w-full object-cover"
-                            width={100}
-                            height={100}
-                          />
-                        ) : (
-                          <Package className="h-8 w-8 text-muted-foreground" />
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="font-medium line-clamp-1">
-                          {product?.basicInfo?.name || "New Product"}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {product?.basicInfo?.sku || "No SKU"}
-                        </p>
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Status</span>
-                        <Badge
-                          variant={
-                            product?.basicInfo?.status === "active"
-                              ? "default"
-                              : "secondary"
-                          }
-                        >
-                          {product?.basicInfo?.status === "active"
-                            ? "Active"
-                            : product?.basicInfo?.status === "draft"
-                            ? "Draft"
-                            : "Archived"}
-                        </Badge>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Price</span>
-                        <span className="font-medium">
-                          ${product?.basicInfo?.price.toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Category</span>
-                        <span>
-                          {product?.basicInfo?.category
-                            ? categories.find(
-                                (c) => c.value === product?.basicInfo?.category
-                              )?.label || product?.basicInfo?.category
-                            : "Uncategorized"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Inventory</span>
-                        <span>{product?.inventory?.quantity} in stock</span>
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium">Quick Actions</h4>
-                      <div className="grid grid-cols-2 gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          className="w-full justify-start"
-                          onClick={() => setActiveTab("images")}
-                        >
-                          <ImagePlus className="mr-2 h-4 w-4" />
-                          Add Images
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          className="w-full justify-start"
-                          onClick={() => setActiveTab("inventory")}
-                        >
-                          <Package className="mr-2 h-4 w-4" />
-                          Inventory
-                        </Button>
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    <div className="space-y-2">
-                      <div className="flex items-center">
-                        <span className="flex-1 text-sm font-medium">
-                          Completion
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          70%
-                        </span>
-                      </div>
-                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                        <div className="h-full gradient-bg w-[70%]" />
-                      </div>
-                      <ul className="text-xs space-y-1 text-muted-foreground">
-                        <li className="flex items-center">
-                          <Check className="h-3 w-3 mr-1 text-green-500" />
-                          Basic information
-                        </li>
-                        <li className="flex items-center">
-                          {product?.images?.length > 0 ? (
-                            <Check className="h-3 w-3 mr-1 text-green-500" />
-                          ) : (
-                            <X className="h-3 w-3 mr-1 text-red-500" />
-                          )}
-                          Product images
-                        </li>
-                        <li className="flex items-center">
-                          {Object.keys(product?.specifications)?.length > 0 ? (
-                            <Check className="h-3 w-3 mr-1 text-green-500" />
-                          ) : (
-                            <X className="h-3 w-3 mr-1 text-red-500" />
-                          )}
-                          Specifications
-                        </li>
-                        <li className="flex items-center">
-                          {product?.seo?.description ? (
-                            <Check className="h-3 w-3 mr-1 text-green-500" />
-                          ) : (
-                            <X className="h-3 w-3 mr-1 text-red-500" />
-                          )}
-                          SEO information
-                        </li>
-                      </ul>
-                    </div>
-                  </CardContent>
-                  <CardFooter> */}
                   <Button
                     type="submit"
                     className="w-full gradient-bg gradient-bg-hover"
-                    disabled={
-                      isUploading 
-                    }
+                    disabled={isUploading}
                   >
                     {isUploading ? (
                       <>

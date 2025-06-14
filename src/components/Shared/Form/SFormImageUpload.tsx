@@ -23,7 +23,6 @@ interface IFormImageUploadProps {
   control: Control<any>;
   multiple?: boolean;
   accept?: string;
-
   onImageUpload: (files: File[] | File) => void;
 }
 
@@ -37,11 +36,16 @@ const SFormImageUpload = ({
 }: IFormImageUploadProps) => {
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [initialImageUrls, setInitialImageUrls] = useState<string[]>([]);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setPreviewImages([]); // Only for client hydration safety
-  }, []);
+    const currentValue = control._formValues[name] as any;
+    if (Array.isArray(currentValue) && typeof currentValue[0] === "string") {
+      setInitialImageUrls(currentValue);
+    }
+  }, [control, name]);
 
   const handleImageChange = (
     e: ChangeEvent<HTMLInputElement>,
@@ -52,39 +56,39 @@ const SFormImageUpload = ({
 
     const fileArray = Array.from(files);
 
-    if (multiple && selectedFiles.length + fileArray.length > 5) {
+    if (multiple && initialImageUrls.length + selectedFiles.length + fileArray.length > 5) {
       toast.warning("You can only upload a maximum of 5 images.");
       return;
     }
 
     const newPreviews = fileArray.map((file) => URL.createObjectURL(file));
-    const updatedFiles = multiple
-      ? [...selectedFiles, ...fileArray]
-      : fileArray;
-
-    const updatedPreviews = multiple
-      ? [...previewImages, ...newPreviews]
-      : newPreviews;
+    const updatedFiles = multiple ? [...selectedFiles, ...fileArray] : fileArray;
+    const updatedPreviews = multiple ? [...previewImages, ...newPreviews] : newPreviews;
 
     setSelectedFiles(updatedFiles);
     setPreviewImages(updatedPreviews);
 
-    fieldOnChange(updatedFiles); // Update RHF value
+    const updatedValue = [...initialImageUrls, ...updatedFiles];
+    fieldOnChange(updatedValue);
     onImageUpload(multiple ? updatedFiles : updatedFiles[0]);
   };
 
   const handleRemoveImage = (
     index: number,
-    fieldOnChange: (value: any) => void
+    fieldOnChange: (value: any) => void,
+    isUrl = false
   ) => {
-    const newPreviews = previewImages.filter((_, i) => i !== index);
-    const newFiles = selectedFiles.filter((_, i) => i !== index);
-
-    setPreviewImages(newPreviews);
-    setSelectedFiles(newFiles);
-
-    fieldOnChange(newFiles); // Update RHF value
-    onImageUpload(multiple ? newFiles : newFiles[0]);
+    if (isUrl) {
+      const updatedUrls = initialImageUrls.filter((_, i) => i !== index);
+      setInitialImageUrls(updatedUrls);
+      fieldOnChange([...updatedUrls, ...selectedFiles]);
+    } else {
+      const newPreviews = previewImages.filter((_, i) => i !== index);
+      const newFiles = selectedFiles.filter((_, i) => i !== index);
+      setPreviewImages(newPreviews);
+      setSelectedFiles(newFiles);
+      fieldOnChange([...initialImageUrls, ...newFiles]);
+    }
   };
 
   return (
@@ -94,66 +98,92 @@ const SFormImageUpload = ({
       render={({ field }) => (
         <FormItem>
           {label && <FormLabel>{label}</FormLabel>}
-       <div className="flex flex-col gap-4 md:flex-row md:flex-wrap">
-  {/* Upload Box */}
-  <FormControl>
-    <div
-      className="w-full md:w-[250px] border border-dashed rounded-md aspect-square flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-muted/50 transition-colors"
-      onClick={() => fileInputRef.current?.click()}
-    >
-      <ImagePlus className="h-10 w-10 text-muted-foreground mb-2" />
-      <p className="text-sm text-muted-foreground text-center">
-        Click to upload or drag and drop
-      </p>
-      <p className="text-xs text-muted-foreground text-center mt-1">
-        {accept.toUpperCase()} (max 5MB)
-      </p>
+          <div className="flex flex-col gap-4 md:flex-row md:flex-wrap">
+            {/* Upload Box */}
+            <FormControl>
+              <div
+                className="w-full md:w-[250px] border border-dashed rounded-md aspect-square flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-muted/50 transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <ImagePlus className="h-10 w-10 text-muted-foreground mb-2" />
+                <p className="text-sm text-muted-foreground text-center">
+                  Click to upload or drag and drop
+                </p>
+                <p className="text-xs text-muted-foreground text-center mt-1">
+                  {accept.toUpperCase()} (max 5MB)
+                </p>
+                <Input
+                  className="hidden"
+                  type="file"
+                  accept={accept}
+                  multiple={multiple}
+                  ref={fileInputRef}
+                  onChange={(e) => handleImageChange(e, field.onChange)}
+                />
+              </div>
+            </FormControl>
 
-      <Input
-        className="hidden"
-        type="file"
-        accept={accept}
-        multiple={multiple}
-        ref={fileInputRef}
-        onChange={(e) => handleImageChange(e, field.onChange)}
-      />
-    </div>
-  </FormControl>
+            {/* Image Previews */}
+            <div className="flex flex-wrap gap-4">
+              {/* Initial Image URLs */}
+              {initialImageUrls.map((url, index) => (
+                <div
+                  key={`url-${index}`}
+                  className="relative w-[150px] h-[150px] border rounded-md overflow-hidden group"
+                >
+                  <Image
+                    src={url || "/placeholder.svg"}
+                    alt={`Uploaded image ${index + 1}`}
+                    className="w-full h-full object-cover"
+                    width={150}
+                    height={150}
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => handleRemoveImage(index, field.onChange, true)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  {index === 0 && (
+                    <Badge className="absolute top-2 left-2 bg-primary">Main</Badge>
+                  )}
+                </div>
+              ))}
 
-  {/* Image Previews */}
-  <div className="flex flex-wrap gap-4">
-    {previewImages.length > 0 &&
-      previewImages.map((image: string, index: number) => (
-        <div
-          key={index}
-          className="relative w-[150px] h-[150px] border rounded-md overflow-hidden group"
-        >
-          <Image
-            src={image || "/placeholder.svg"}
-            alt={`Product image ${index + 1}`}
-            className="w-full h-full object-cover"
-            width={150}
-            height={150}
-          />
-          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-            <Button
-              type="button"
-              variant="destructive"
-              size="icon"
-              onClick={() => handleRemoveImage(index, field.onChange)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+              {/* Newly Uploaded Images */}
+              {previewImages.map((image, index) => (
+                <div
+                  key={`preview-${index}`}
+                  className="relative w-[150px] h-[150px] border rounded-md overflow-hidden group"
+                >
+                  <Image
+                    src={image || "/placeholder.svg"}
+                    alt={`Preview image ${index + 1}`}
+                    className="w-full h-full object-cover"
+                    width={150}
+                    height={150}
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => handleRemoveImage(index, field.onChange, false)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  {index === 0 && (
+                    <Badge className="absolute top-2 left-2 bg-primary">Main</Badge>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-          {index === 0 && (
-            <Badge className="absolute top-2 left-2 bg-primary">Main</Badge>
-          )}
-        </div>
-      ))}
-  </div>
-</div>
-
-
           <FormMessage />
         </FormItem>
       )}
