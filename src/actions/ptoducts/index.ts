@@ -41,7 +41,6 @@ export const updateProduct = async (id: string, product: any) => {
   });
   const data = await res.json();
 
-  // console.log(data,"data from server updated")
 
   revalidateTag("products");
   revalidateTag(`product-${id}`);

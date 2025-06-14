@@ -85,7 +85,6 @@ export default function ProductsTable({
       const response = await deleteProduct(id);
       if (response?.success) {
         // Optionally, you can show a success message or refresh the product list
-        console.log("Product deleted successfully");
       }
     } catch (error) {
       console.error("Failed to delete product:", error);

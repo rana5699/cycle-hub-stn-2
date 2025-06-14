@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "../../globals.css";
-import { Toaster } from "@/components/ui/toaster";
 import AdminNavbar from "@/components/Module/Dashboard/Admin/AdminNavbar";
+import { Toaster } from "sonner";
 
 
 export const metadata: Metadata = {

@@ -34,7 +34,7 @@ export function middleware(request: NextRequest) {
 
     return NextResponse.next();
   } catch (error) {
-    console.error("Error validating token:", error);
+    console.error("Error decoding token:", error);
     return NextResponse.redirect(new URL("/login", request.url));
   }
 }

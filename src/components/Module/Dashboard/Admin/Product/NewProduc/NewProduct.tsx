@@ -74,59 +74,11 @@ export default function ProductForm({
     initialData || emptyProduct
   );
 
-  const [selectedCategory, setSelectedCategory] = useState(
-    initialData?.basicInfo?.category || ""
-  );
   const [productImageUrl, setProductImageUrl] = useState<File | File[]>([]);
   const { uploadImagesToCloudinary, isUploading } = useImageUploader();
 
   const [newSpecKey, setNewSpecKey] = useState("");
   const [newSpecValue, setNewSpecValue] = useState("");
-
-  const handleSwitchChange = (checked: boolean) => {
-    setProduct((prev) => ({
-      ...prev,
-      basicInfo: {
-        ...prev.basicInfo,
-        featured: checked,
-      },
-    }));
-  };
-
-  const handleSelectChange = (name: string, value: string) => {
-    // Special case for category to update subcategories
-    if (name === "category") {
-      setSelectedCategory(value);
-    }
-
-    setProduct((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleInputChange = (
-    name: string,
-    value: string | number | boolean
-  ) => {
-    setProduct((prev) => ({
-      ...prev,
-      basicInfo: {
-        ...prev.basicInfo,
-        [name]: value,
-      },
-    }));
-  };
-
-  const handleNumberInputChange = (name: string, value: number) => {
-    setProduct((prev) => ({
-      ...prev,
-      basicInfo: {
-        ...prev.basicInfo,
-        [name]: value,
-      },
-    }));
-  };
 
   const handleAddSpecification = () => {
     if (newSpecKey.trim() && newSpecValue.trim()) {
@@ -153,11 +105,9 @@ export default function ProductForm({
     });
   };
 
-  const handleSubmit = async (data: any) => {
-    const uploadedImageUrl = await uploadImagesToCloudinary(
-      productImageUrl,
-      true
-    );
+ const handleSubmit = async (data: any) => {
+  try {
+    const uploadedImageUrl = await uploadImagesToCloudinary(productImageUrl, true);
 
     const basic = data.basicInfo || {};
     const productData = {
@@ -171,84 +121,44 @@ export default function ProductForm({
         quantity: Number(basic.quantity),
         featured: basic.featured,
         status: basic.status,
-        category: selectedCategory || basic.category || "BMX",
+        category:  basic.category || "BMX",
       },
-      images: uploadedImageUrl,
-      specifications: product?.specifications || {},
+      images: uploadedImageUrl.length ? uploadedImageUrl : initialData?.images || [],
+      specifications: product?.specifications || initialData?.specifications || {},
     };
 
 
-    try {
-      let response;
+    let response;
 
-      if (isEditing && initialData?._id) {
-
-        const updatedData = {
-          ...initialData,
-          
-          basicInfo: {
-            ...initialData.basicInfo,
-            ...productData.basicInfo,
-          },
-          images: uploadedImageUrl.length
-            ? uploadedImageUrl
-            : initialData.images,
-          specifications: product?.specifications || initialData.specifications,
-          updatedAt: new Date().toISOString(),
-          updatedBy: "admin",
-        };
-
-        console.log(updatedData, "updatedData");
-
-        response = await updateProduct(initialData._id, updatedData);
-
-        // console.log(response, "response from client");
-
-      } else {
-        response = await createProduct(productData);
-      }
-
-
-
-      if (response.success) {
-        form.reset();
-        setProduct(emptyProduct);
-        setProductImageUrl([]);
-        setActiveTab("basic");
-        toast.success(
-          isEditing
-            ? "Product updated successfully!"
-            : "Product created successfully!"
-        );
-        router.push("/dashboard/admin/products");
-      }
-      // console.log(response, "FROM client");
-    } catch (error) {
-      console.error("Error saving product:", error);
+    if (isEditing && initialData?._id) {
+      const updatedData = {
+        ...initialData,
+        ...productData,
+        updatedAt: new Date().toISOString(),
+        updatedBy: "admin",
+      };
+      response = await updateProduct(initialData._id, updatedData);
+    } else {
+      response = await createProduct(productData);
     }
-  };
 
-  // const isBasicInfoValid = () => {
-  //   const { name, description, price, quantity, sku, category, brand } =
-  //     product.basicInfo;
-  //   return (
-  //     name &&
-  //     description &&
-  //     price > 0 &&
-  //     quantity > 0 &&
-  //     sku &&
-  //     category &&
-  //     brand
-  //   );
-  // };
+    if (response.success) {
+      form.reset();
+      setProduct(emptyProduct);
+      setProductImageUrl([]);
+      setActiveTab("basic");
+      toast.success(
+        isEditing
+          ? "Product updated successfully!"
+          : "Product created successfully!"
+      );
+      router.push("/dashboard/admin/products");
+    }
+  } catch (error:any) {
+   toast.error(error.message || "Something went wrong");
+  }
+};
 
-  // const isImagesValid = () => {
-  //   return Array.isArray(productImageUrl)
-  //     ? productImageUrl.length > 0
-  //     : !!productImageUrl;
-  // };
-
-  // console.log(initialData, "isEditing");
 
   return (
     <Form {...form}>
@@ -327,12 +237,8 @@ export default function ProductForm({
               <div className="lg:col-span-2">
                 <TabsContent value="basic">
                   <BasicInformation
-                    // productInfo={product.basicInfo}
-                    // handleSelectChange={handleSelectChange}
-                    // handleSwitchChange={handleSwitchChange}
-                    // handleInputChange={handleInputChange}
-                    // handleNumberInputChange={handleNumberInputChange}
                     control={form.control}
+                    // basicInfo={product?.basicInfo}
                   />
                 </TabsContent>
               </div>

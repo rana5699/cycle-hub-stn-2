@@ -11,7 +11,7 @@ import {
 import SFormInput from "@/components/Shared/Form/SFormInput";
 import SFormTextArea from "@/components/Shared/Form/SFormTextArea";
 import { Control } from "react-hook-form";
-import { BicycleCategory, } from "@/types";
+import { BicycleCategory } from "@/types";
 import SFormSelect from "@/components/Shared/Form/SFormSelect";
 import SFTagSelector from "@/components/Shared/Form/SFTagSelector";
 import SFormSwitch from "@/components/Shared/Form/SFormSwicth";
@@ -46,7 +46,9 @@ interface ProductFormBasicInfoProps {
   control: Control<any>;
 }
 
-const BasicInformation = ({ control }: ProductFormBasicInfoProps) => {
+const BasicInformation = ({
+  control,
+}: ProductFormBasicInfoProps) => {
   return (
     <Card>
       <CardHeader>
@@ -61,7 +63,7 @@ const BasicInformation = ({ control }: ProductFormBasicInfoProps) => {
         <div className="space-y-2">
           <SFormInput
             control={control}
-            name="name"
+            name="basicInfo.name"
             placeholder="e.g. Mountain Bike Pro 2023"
             type="text"
             label="Product Name"
@@ -72,7 +74,7 @@ const BasicInformation = ({ control }: ProductFormBasicInfoProps) => {
         <div className="space-y-2">
           <SFormInput
             control={control}
-            name="brand"
+            name="basicInfo.brand"
             placeholder="e.g. Hero"
             type="text"
             label="Brand Name"
@@ -83,7 +85,7 @@ const BasicInformation = ({ control }: ProductFormBasicInfoProps) => {
         <div className="space-y-2">
           <SFormTextArea
             control={control}
-            name="description"
+            name="basicInfo.description"
             label="Product Description"
             placeholder="Describe your product in detail"
           />
@@ -94,7 +96,7 @@ const BasicInformation = ({ control }: ProductFormBasicInfoProps) => {
           <div className="space-y-2">
             <SFormInput
               control={control}
-              name="price"
+              name="basicInfo.price"
               placeholder="0.00"
               type="number"
               label="Price"
@@ -107,7 +109,7 @@ const BasicInformation = ({ control }: ProductFormBasicInfoProps) => {
           <div className="space-y-2">
             <SFormInput
               control={control}
-              name="quantity"
+              name="basicInfo.quantity"
               placeholder="e.g. 525"
               type="number"
               label="Quantity"
@@ -117,7 +119,7 @@ const BasicInformation = ({ control }: ProductFormBasicInfoProps) => {
           <div className="space-y-2">
             <SFormInput
               control={control}
-              name="sku"
+              name="basicInfo.sku"
               placeholder="e.g. MTB-PRO-2023"
               type="text"
               label="SKU"
@@ -130,7 +132,7 @@ const BasicInformation = ({ control }: ProductFormBasicInfoProps) => {
           <div className="space-y-2">
             <SFormSelect
               control={control}
-              name="category"
+              name="basicInfo.category"
               label="Category"
               placeholder="Select a category"
               options={categories}
@@ -142,7 +144,7 @@ const BasicInformation = ({ control }: ProductFormBasicInfoProps) => {
         <div className="space-y-2">
           <SFTagSelector
             control={control}
-            name="tags"
+            name="basicInfo.tags"
             label="Product Tags"
             availableTags={availableTags}
           />
@@ -153,7 +155,7 @@ const BasicInformation = ({ control }: ProductFormBasicInfoProps) => {
           <div className="flex items-center space-x-2">
             <SFormSwitch
               control={control}
-              name="featured"
+              name="basicInfo.featured"
               label="Featured Product"
             />
           </div>
@@ -161,7 +163,7 @@ const BasicInformation = ({ control }: ProductFormBasicInfoProps) => {
           <div className="space-y-2">
             <SFormSelect
               control={control}
-              name="status"
+              name="basicInfo.status"
               label="Product Status"
               placeholder="Select a status"
               options={[
