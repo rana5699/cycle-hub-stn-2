@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import {
@@ -34,6 +33,7 @@ export default function ExperienceSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+  const [isUserPaused, setIsUserPaused] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -86,10 +86,11 @@ export default function ExperienceSection() {
   ];
 
   useEffect(() => {
-    if (isInView && !isPlaying) {
+    if (isInView && !isPlaying && !isUserPaused) {
+      videoRef.current?.play();
       setIsPlaying(true);
     }
-  }, [isInView, isPlaying]);
+  }, [isInView, isPlaying, isUserPaused]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -101,28 +102,46 @@ export default function ExperienceSection() {
     return () => clearInterval(interval);
   }, [isPlaying, experiences.length]);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+
+    video.addEventListener("play", handlePlay);
+    video.addEventListener("pause", handlePause);
+
+    return () => {
+      video.removeEventListener("play", handlePlay);
+      video.removeEventListener("pause", handlePause);
+    };
+  }, []);
+
   const toggleVideo = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
+    if (!videoRef.current) return;
+
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsUserPaused(true);
+    } else {
+      videoRef.current.play();
+      setIsUserPaused(false);
     }
+
+    setIsPlaying(!isPlaying);
   };
 
   const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-    }
+    if (!videoRef.current) return;
+    videoRef.current.muted = !isMuted;
+    setIsMuted(!isMuted);
   };
 
   return (
-    <section ref={containerRef} className="relative  overflow-hidden">
+    <section ref={containerRef} className="relative overflow-hidden">
       {/* Animated Background Elements */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 pointer-events-none">
         <motion.div
           style={{ y, opacity }}
           className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"
@@ -132,7 +151,7 @@ export default function ExperienceSection() {
             y: useTransform(scrollYProgress, [0, 1], [-50, 150]),
             opacity,
           }}
-          className="absolute bottom-20 right-10 w-96 h-96 text-white bg-gradient-to-r from-navy-blue to-teal-500 hover:from-teal-500 hover:to-navy-blue rounded-full blur-3xl"
+          className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-navy-blue to-teal-500 rounded-full blur-3xl"
         />
       </div>
 
@@ -145,7 +164,7 @@ export default function ExperienceSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-           Interactive Experience
+            Interactive Experience
           </motion.h2>
           <motion.p
             className="text-lg text-muted-foreground max-w-2xl mx-auto"
@@ -154,42 +173,48 @@ export default function ExperienceSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            Immerse yourself in the world of premium cycling with our interactive experience
+            Immerse yourself in the world of premium cycling with our
+            interactive experience
           </motion.p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Interactive Video/Visual Section */}
+          {/* Video Section */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative"
+            className="relative rounded-3xl overflow-hidden shadow-2xl"
           >
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+            {/* Responsive Video Wrapper */}
+            <div className="relative w-full aspect-w-16 aspect-h-9 bg-black">
               <video
                 ref={videoRef}
-                className="w-full h-[400px] object-cover"
+                className="w-full h-full object-cover"
                 loop
                 muted={isMuted}
                 playsInline
                 poster="/placeholder.svg?height=400&width=600"
+                preload="metadata"
               >
-                <source src="/cycling-video.mp4" type="video/mp4" />
+                {/* Replace below src with your actual video URL */}
+                <source src="https://cdn.pixabay.com/video/2024/04/12/207800_tiny.mp4" />
+                Your browser does not support the video tag.
               </video>
 
-              {/* Video Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+              {/* Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
 
-              {/* Video Controls */}
-              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+              {/* Controls */}
+              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between pointer-events-auto">
                 <div className="flex items-center space-x-3">
                   <Button
                     size="sm"
                     variant="secondary"
                     className="bg-white/20 backdrop-blur-sm border-white/20 text-white hover:bg-white/30"
                     onClick={toggleVideo}
+                    aria-label={isPlaying ? "Pause video" : "Play video"}
                   >
                     {isPlaying ? (
                       <Pause className="h-4 w-4" />
@@ -202,6 +227,7 @@ export default function ExperienceSection() {
                     variant="secondary"
                     className="bg-white/20 backdrop-blur-sm border-white/20 text-white hover:bg-white/30"
                     onClick={toggleMute}
+                    aria-label={isMuted ? "Unmute video" : "Mute video"}
                   >
                     {isMuted ? (
                       <VolumeX className="h-4 w-4" />
@@ -241,7 +267,7 @@ export default function ExperienceSection() {
               animate={{ y: [0, -10, 0] }}
               transition={{
                 duration: 3,
-                repeat: Number.POSITIVE_INFINITY,
+                repeat: Infinity,
                 ease: "easeInOut",
               }}
               className="absolute -top-6 -left-6 w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-lg"
@@ -250,7 +276,7 @@ export default function ExperienceSection() {
               animate={{ y: [0, 10, 0] }}
               transition={{
                 duration: 4,
-                repeat: Number.POSITIVE_INFINITY,
+                repeat: Infinity,
                 ease: "easeInOut",
                 delay: 1,
               }}
@@ -281,7 +307,7 @@ export default function ExperienceSection() {
                 <Card
                   className={`overflow-hidden transition-all duration-500 ${
                     activeStep === index
-                      ? "shadow-xl border-2 border-navy-blue-200 "
+                      ? "shadow-xl border-2 border-navy-blue-200"
                       : "shadow-md hover:shadow-lg"
                   }`}
                 >
@@ -331,7 +357,7 @@ export default function ExperienceSection() {
                         initial={{ width: 0 }}
                         animate={{ width: "100%" }}
                         transition={{ duration: 4, ease: "linear" }}
-                        className="absolute bottom-0 left-0 h-1 text-white bg-gradient-to-r from-navy-blue to-teal-500 hover:from-teal-500 "
+                        className="absolute bottom-0 left-0 h-1 text-white bg-gradient-to-r from-navy-blue to-teal-500 hover:from-teal-500"
                       />
                     )}
                   </CardContent>
@@ -347,13 +373,13 @@ export default function ExperienceSection() {
               transition={{ duration: 0.6, delay: 0.6 }}
               className="pt-6"
             >
-              <Button className="w-full text-white bg-gradient-to-r from-navy-blue to-teal-500 hover:from-teal-500 hover:to-navy-blue shadow-lg cursor-progress">
+              <Button className="w-full text-white bg-gradient-to-r from-navy-blue to-teal-500 hover:from-teal-500 hover:to-navy-blue shadow-lg cursor-pointer">
                 Start Your Journey
                 <motion.div
                   animate={{ x: [0, 5, 0] }}
                   transition={{
                     duration: 1.5,
-                    repeat: Number.POSITIVE_INFINITY,
+                    repeat: Infinity,
                   }}
                   className="ml-2"
                 >

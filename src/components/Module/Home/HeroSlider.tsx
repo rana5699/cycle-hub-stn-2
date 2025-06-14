@@ -9,19 +9,21 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TNewProduct } from "@/types";
 
-
 export default function HeroSlider({ products }: { products: TNewProduct[] }) {
   const topFiveProducts = products.slice(0, 5);
- 
+
   const [currentSlide, setCurrentSlide] = useState(0);
 
-
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev === topFiveProducts?.length - 1 ? 0 : prev + 1));
+    setCurrentSlide((prev) =>
+      prev === topFiveProducts?.length - 1 ? 0 : prev + 1
+    );
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? topFiveProducts?.length - 1 : prev - 1));
+    setCurrentSlide((prev) =>
+      prev === 0 ? topFiveProducts?.length - 1 : prev - 1
+    );
   };
 
   useEffect(() => {
@@ -30,7 +32,7 @@ export default function HeroSlider({ products }: { products: TNewProduct[] }) {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [currentSlide]);
 
   // console.log(topFiveProducts, "from hero");
 
@@ -45,7 +47,7 @@ export default function HeroSlider({ products }: { products: TNewProduct[] }) {
           transition={{ duration: 0.5 }}
           className="absolute inset-0"
         >
-          <div className="relative w-full h-full">
+          <div className="relative h-[50vh] sm:h-[60vh] md:h-[80vh] overflow-hidden">
             <Image
               src={
                 topFiveProducts[currentSlide]?.images?.[0]?.replace(
@@ -53,10 +55,12 @@ export default function HeroSlider({ products }: { products: TNewProduct[] }) {
                   "https://"
                 ) || "/placeholder.svg"
               }
-              alt={topFiveProducts[currentSlide]?.basicInfo?.name || "Hero Image"}
+              alt={
+                topFiveProducts[currentSlide]?.basicInfo?.name || "Hero Image"
+              }
               fill
-              priority
-              className="object-cover"
+              priority={currentSlide === 0}
+              className="object-cover "
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
 
@@ -69,10 +73,13 @@ export default function HeroSlider({ products }: { products: TNewProduct[] }) {
                   className="max-w-lg space-y-4 text-white"
                 >
                   <h1 className="text-4xl font-bold md:text-6xl">
-                    {topFiveProducts[currentSlide]?.basicInfo?.name || "Featured Product"}
+                    {topFiveProducts[currentSlide]?.basicInfo?.name ||
+                      "Featured Product"}
                   </h1>
                   <p className="text-lg md:text-xl">
-                    {topFiveProducts[currentSlide]?.basicInfo?.description?.   slice(0, 100)}
+                    {topFiveProducts[
+                      currentSlide
+                    ]?.basicInfo?.description?.slice(0, 100)}
                   </p>
                   <Link href={`products/${topFiveProducts[currentSlide]?._id}`}>
                     <Button

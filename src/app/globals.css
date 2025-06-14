@@ -49,6 +49,20 @@
   }
 }
 
+.aspect-w-16 {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 aspect ratio */
+}
+.aspect-w-16 > video {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
 @layer base {
   * {
     @apply border-border;

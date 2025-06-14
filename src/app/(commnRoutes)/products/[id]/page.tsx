@@ -16,6 +16,7 @@ import { TNewProduct } from "@/types";
 export default function ProductPage() {
   const { id } = useParams();
   const [product, setProduct] = useState<TNewProduct | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -59,33 +60,61 @@ export default function ProductPage() {
         <div className="grid gap-8 md:grid-cols-2 lg:gap-16">
           {/* Product Images */}
           <div className="space-y-4">
-            <div className="relative overflow-hidden border rounded-lg aspect-square">
-              <Image
-                src={
-                  product?.images?.[0]?.replace("http://", "https://") ||
-                  "/placeholder.svg"
-                }
-                alt={product?.basicInfo?.name as string}
-                fill
-                className="object-cover"
-                priority
-              />
+            {/* Main Image */}
+            <div className="relative overflow-hidden border rounded-lg aspect-square bg-gray-50">
+              {selectedImage || product?.images?.[0] ? (
+                <Image
+                  src={
+                    (selectedImage
+                      ? selectedImage.replace("http://", "https://")
+                      : product?.images?.[0]
+                      ? product.images[0].replace("http://", "https://")
+                      : "/placeholder-product.svg") as string
+                  }
+                  alt={product?.basicInfo?.name || "Product image"}
+                  fill
+                  className="object-cover transition-opacity opacity-0 duration-300"
+                  onLoadingComplete={(image) =>
+                    image.classList.remove("opacity-0")
+                  }
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  priority
+                />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                  <Image
+                    src="/placeholder-product.svg" // Consider a better placeholder
+                    alt="No image available"
+                    width={120}
+                    height={120}
+                    className="opacity-40"
+                  />
+                  <p className="text-sm">No image available</p>
+                </div>
+              )}
             </div>
 
-            <div className="grid grid-cols-4 gap-4">
+            {/* Thumbnail Gallery */}
+            <div className="grid grid-cols-4 gap-3">
               {product?.images?.map((image, index) => (
-                <div
+                <button
                   key={index}
-                  className="relative overflow-hidden border rounded-lg cursor-pointer aspect-square hover:border-teal-500"
+                  onClick={() => setSelectedImage(image)}
+                  className={`relative overflow-hidden border rounded-lg aspect-square transition-all duration-200 ${
+                    selectedImage === image
+                      ? "ring-2 ring-teal-500 border-teal-500"
+                      : "hover:border-teal-300"
+                  }`}
                 >
                   <Image
-                    src={image}
-                    alt={product?.basicInfo?.name as string}
+                    src={image.replace("http://", "https://")}
+                    alt={`Thumbnail ${index + 1}`}
+                    fill
                     className="object-cover"
-                    height={200}
-                    width={200}
+                    sizes="(max-width: 768px) 25vw, (max-width: 1024px) 15vw, 10vw"
+                    quality={50} // Lower quality for thumbnails
                   />
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -182,8 +211,6 @@ export default function ProductPage() {
             </p>
           </TabsContent>
           <TabsContent value="specifications" className="py-6">
-        
-
             <div className="">
               <div>
                 <div className="space-y-3">
@@ -363,7 +390,6 @@ export default function ProductPage() {
                   </div>
                 </div>
               </div>
-
             </div>
           </TabsContent>
         </Tabs>

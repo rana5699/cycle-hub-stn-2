@@ -8,14 +8,17 @@ import { Heart, ShoppingCart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "../Providers/CartProvider";
 import { TNewProduct } from "@/types";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 export default function ProductCard({ product }: { product: TNewProduct }) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const { addToCart } = useCart();
 
+
   const toggleWishlist = () => {
     setIsWishlisted(!isWishlisted);
-    alert("Item added to wishlist!");
+    toast.success(isWishlisted ? "Removed from Wishlist" : "Added to Wishlist");
   };
 
   const handleAddToCart = () => {
@@ -45,15 +48,23 @@ export default function ProductCard({ product }: { product: TNewProduct }) {
                 }
                 alt={product?.basicInfo?.name || "Product Image"}
                 fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="object-cover transition-transform hover:scale-105"
+                priority={false}
               />
             </div>
           </Link>
 
-          {/* <div className="absolute flex flex-col gap-2 top-2 left-2">
-            {product?.isNew && <Badge className="bg-teal-500">New</Badge>}
-            {product?.isSale && <Badge className="text-white bg-coral">Sale</Badge>}
-          </div> */}
+          <div className="absolute flex flex-col gap-2 top-2 left-2">
+           {product?.basicInfo?.tags.slice(0, 1).map((tag, idx) => (
+              <Badge
+                key={idx}
+              className="text-white bg-gradient-to-r from-navy-blue to-teal-500 "
+              >
+                {tag.charAt(0).toUpperCase() + tag.slice(1)}
+              </Badge>
+            ))}
+          </div>
 
           <Button
             variant="outline"

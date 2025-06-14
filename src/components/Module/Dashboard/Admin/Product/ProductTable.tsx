@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -44,6 +45,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { BicycleCategory, TNewProduct } from "@/types";
 import { deleteProduct } from "@/actions/ptoducts";
+import { toast } from "sonner";
 
 export default function ProductsTable({
   products,
@@ -84,10 +86,10 @@ export default function ProductsTable({
     try {
       const response = await deleteProduct(id);
       if (response?.success) {
-        // Optionally, you can show a success message or refresh the product list
+        toast.success("Product deleted successfully!");
       }
-    } catch (error) {
-      console.error("Failed to delete product:", error);
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
     }
   };
 
@@ -170,7 +172,9 @@ export default function ProductsTable({
                   <TableCell>{product?._id}</TableCell>
                   <TableCell>
                     <div className="font-medium">
-                      {product?.basicInfo?.name}
+                      <Link href={`/products/${product?._id}`}>
+                        {product?.basicInfo?.name}
+                      </Link>
                     </div>
                     <div className="sm:hidden text-xs text-muted-foreground">
                       {product?.basicInfo?.category}
@@ -207,7 +211,9 @@ export default function ProductsTable({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-40">
                         <DropdownMenuItem asChild>
-                          <Link href={`/dashboard/admin/products/${product?._id}`}>
+                          <Link
+                            href={`/dashboard/admin/products/${product?._id}`}
+                          >
                             <div className="flex items-center gap-2 cursor-pointer">
                               <Edit className="w-3.5 h-3.5" />
                               Edit

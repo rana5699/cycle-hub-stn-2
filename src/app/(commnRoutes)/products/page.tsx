@@ -54,15 +54,6 @@ export default function ProductsPage() {
     setFilteredProducts(filtered);
   };
 
-  // if (loading) {
-  //   return (
-  //     <div className="container my-20">
-  //       {" "}
-  //       <ProductsSkeleton />
-  //     </div>
-  //   );
-  // }
-
   return (
     <main className="flex-1 pt-24">
       <div className="container py-8">
@@ -87,8 +78,7 @@ export default function ProductsPage() {
               {filteredProducts.length > 0 ? (
                 <ProductsGrid products={filteredProducts} />
               ) : (
-                // styles and animated product not aviable
-                // <h2 className="text-2xl font-semibold">No products found</h2>
+
                 <ProductNotFound />
               )}
             </Suspense>
