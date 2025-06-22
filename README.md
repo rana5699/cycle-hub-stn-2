@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚴 Bicycle Store - Frontend (Next.js)
 
-## Getting Started
+A modern and responsive **Bicycle Store web application** built using **Next.js**, **TypeScript**, and **Tailwind CSS**. This frontend connects to the Bicycle Store REST API and offers full **product browsing**, **ordering**, **user authentication**, and **Stripe payment integration** for a complete e-commerce experience.
 
-First, run the development server:
+---
+
+## ✨ Key Features
+
+- 🧑‍💻 **User Authentication**
+  - Sign up / login using JWT
+  - Role-based UI for customers and admins
+
+- 🛍 **Product Catalog**
+  - View all bicycles
+  - Search and filter by name, brand, and type
+  - View bicycle details with clean UI
+
+- 🧾 **Order System**
+  - Add to cart & view cart items
+  - Place orders with inventory check
+  - Track user-specific orders
+
+- 💳 **Stripe Payment Integration**
+  - Secure checkout process
+  - Payment handled via Stripe PaymentIntent
+  - Order success confirmation
+
+- 🧑‍⚖️ **Admin Dashboard**
+  - Add, edit, or delete products
+  - Manage orders and inventory
+  - Revenue overview (optional)
+
+- 📱 **Fully Responsive**
+  - Mobile-first and optimized for all devices
+
+---
+
+## 🔧 Tech Stack
+
+- **Framework**: [Next.js](https://nextjs.org/)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **State Management**: React Context or Redux Toolkit
+- **API Communication**: Axios / Fetch API
+- **Authentication**: JWT with HTTP-only cookies or localStorage
+- **Payment**: Stripe
+
+---
+
+## 📦 Installation
+
+### 1. Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+git clone https://github.com/rana5699/bicycle-store-frontend.git
+cd bicycle-store-frontend
