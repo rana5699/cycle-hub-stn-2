@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,7 +14,6 @@ import {
   PenTool,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -29,6 +28,7 @@ import {
 import { useCart } from "../Module/Providers/CartProvider";
 import CartDrawer from "../Module/Cart/CartDrawer";
 import ProfileMenu from "./Profile/ProfileMenu";
+import SearchProducts from "./SearchProducts/SearchProducts";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -98,6 +98,8 @@ export default function Navbar() {
       href: "/products/category/accessories",
     },
   ];
+
+
 
   return (
     <header className={navbarClasses}>
@@ -234,26 +236,7 @@ export default function Navbar() {
             exit={{ opacity: 0, y: -10 }}
             className="absolute left-0 right-0 p-4 bg-white shadow-md top-full dark:bg-gray-900"
           >
-            <div className="container flex items-center">
-              <Input
-                type="search"
-                placeholder="Search for bikes, accessories, and more..."
-                className="flex-1"
-                autoFocus
-              />
-              <Button className="ml-2 bg-gradient-to-r from-navy-blue to-teal-500">
-                Search
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsSearchOpen(false)}
-                className="ml-2"
-                aria-label="Close search"
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
+            <SearchProducts setIsSearchOpen={setIsSearchOpen} />
           </motion.div>
         )}
       </AnimatePresence>
