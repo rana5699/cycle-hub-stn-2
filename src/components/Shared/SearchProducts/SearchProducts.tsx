@@ -12,6 +12,7 @@ import { TNewProduct } from "@/types";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 const SearchProducts = ({ setIsSearchOpen }: { setIsSearchOpen: any }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -104,14 +105,23 @@ const SearchProducts = ({ setIsSearchOpen }: { setIsSearchOpen: any }) => {
                           {product.basicInfo?.name?.slice(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <div>
-                        <div className=" font-medium">
-                          {product.basicInfo?.name}
+                      <Link
+                        href={`/products/${product?._id}`}
+                        onClick={() => {
+                          setIsSearchOpen(false);
+                          setSearchQuery("");
+                          setProducts(allProducts);
+                        }}
+                      >
+                        <div>
+                          <div className=" font-medium">
+                            {product.basicInfo?.name}
+                          </div>
+                          <div className="text-lg text-red-500 font-bold">
+                            ${product.basicInfo?.price}
+                          </div>
                         </div>
-                        <div className="text-lg text-red-500 font-bold">
-                          ${product.basicInfo?.price}
-                        </div>
-                      </div>
+                      </Link>
                     </li>
                   ))}
                 </ul>
